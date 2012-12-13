@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8">
   <title><%= title %></title>
-  <link href="<%= css %>"
+  <link href="<%= "docco.css" %>"
         rel="stylesheet"
         type="text/css"
         media="screen, projection"/>
@@ -12,12 +12,12 @@
 <div id="docco-index">
   <h1><%= title %></h1>
   <ul>
-  <% _(dirs).each(function(dir) { %>
+  <% _(dirs).each(function(files, dir) { %>
     <li>
-      <p><%= dir.path %></p>
+      <p><%= dir %></p>
       <ul>
-        <% _(dir.files).each(function(file) { %>
-          <li><a href="<%= dir.path %>/<%= file %>.html"><%= file %></a></li>
+        <% _(files).each(function(file) { %>
+          <li><a href="<%= file %>.html"><%= file %></a></li>
         <% }) %>
       </ul>
     </li>

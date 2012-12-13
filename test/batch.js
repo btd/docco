@@ -29,7 +29,7 @@ describe("docco - batch", function() {
 			function(entry) {
 				files.push(entry)
 			}, function() {
-				console.log(files)
+				//console.log(files)
 				done()
 			});
 	})

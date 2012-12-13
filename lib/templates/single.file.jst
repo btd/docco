@@ -4,7 +4,7 @@
 <head>
   <title><%= filename %></title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <link rel="stylesheet" media="all" href="<%= "docco.css" %>" />
+  <link rel="stylesheet" media="all" href="<%= (rootDir ? rootDir : ".") + "/docco.css" %>" />
 </head>
 <body>
   <div id="container">
@@ -12,7 +12,11 @@
     <ul class="sections">  
         <li id="title">
             <div class="annotation">
+                <% if(rootDir) { %>
+                <h1><a href="<%= rootDir %>/index.html" title="Back to index">&larr;</a>&nbsp;&nbsp;<%= filename %></h1>
+                <% } else { %>
                 <h1><%= filename %></h1>
+                <% } %>
             </div>
         </li>
         <% for (var i=0, l=sections.length; i<l; i++) { %>
@@ -33,3 +37,4 @@
   </div>
 </body>
 </html>
+
