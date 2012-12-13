@@ -40,6 +40,8 @@ describe("docco - batch", function() {
 			path: './lib',
 			config: config,
 			filters: [/^\.[^\/].*/, /\/\.[^\/]/, /\.jst$/]
-		}], done)
+		}], done, {
+			title: "New docco"
+		})
 	})
 })
