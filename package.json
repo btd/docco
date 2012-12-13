@@ -1,0 +1,27 @@
+{
+  "name": "docco",
+  "version": "0.0.1",
+  "description": "Fork of docco",
+  "main": "index.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": "",
+  "keywords": [
+    "docco",
+    "docs"
+  ],
+  "author": "Denis Bardadym (bardadymchik@gmail.com)",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "~1.7.4",
+    "should": "~1.2.1"
+  },
+  "dependencies": {
+    "showdown": "~0.3.1",
+    "highlight.js": "~7.3.0",
+    "lodash": "~1.0.0-rc.2",
+    "walk": "~2.2.1",
+    "mkdirp": "~0.3.4"
+  }
+}
