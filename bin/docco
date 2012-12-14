@@ -1,0 +1,114 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var program = require('commander'),
+		fs = require('fs'),
+		path = require('path'),
+		_ = require('lodash')
+
+var doccoSingle = require('../lib/single'),
+		doccoBatch = require('../lib/batch').doccoBatch
+
+program
+  .version('0.0.1')
+  .usage('[options] <files and/or dirs>')
+  .option('--title <title>', 'this will be used for index page title in batch mode', "")
+  .option('-l, --lang-config <path>', 'path to your language configuration file, see examples in docs')
+  .option('--batch-config <path>', 'path to your batch configuration file, see examples in docs')
+  .option('-b, --batch', 'force usage of batch mode')
+  .option('-o, --output <path>', 'output path by default it is current directory, it is strongly recommended to specify it in batch mode', '.')
+  .parse(process.argv)
+
+
+
+var defaultLanguageConfig = [{//fallback
+		"comments": [["/*!", "*/"], ["//", "\n"]],
+		"files": [/.*/] 
+}]
+
+var defaultFilters = [/^\.[^\/].*/, /\/\.[^\/]/]
+
+var args = program.args
+
+var options = {
+	title: program.title,
+	outputPath: program.output
+}
+
+var languageConfiguration = program.langConfig ? langConfig(program.langConfig) : defaultLanguageConfig
+
+if(args.length === 0) {
+	console.log("You should specify source file or directory")
+	return
+} else if(args.length === 1) {
+	var specifiedPath = args[0]
+	//first need to check what is it file or directory
+	fs.stat(specifiedPath, function(err, stat) {
+		if(err) throw err
+
+		if(stat.isDirectory() || program.batch) {
+			//batch mode
+			runBatch([{
+				path: specifiedPath,
+				config: languageConfiguration,
+				filters: defaultFilters
+			}], options, function() {
+				copyResources(program.output)
+			})
+		} else if(stat.isFile()) {
+			//single file mode
+			new doccoSingle(languageConfiguration).processFile(specifiedPath, function() {
+				console.log("Processing file " + specifiedPath + " finished")
+				copyResources(program.output)
+			}, options)
+		} else {
+			//something else?
+			console.log("Are you sure that you choose real file or directory?")
+		}
+	})
+} else {
+	//force batch mode
+
+	runBatch(args.map(function(specifiedPath) {
+		return {
+			path: specifiedPath,
+			config: languageConfiguration,
+			filters: defaultFilters
+		}
+	}), options, function() {
+		copyResources(program.output)
+	})
+	
+}
+
+var runBatch = function(config, options, end) {
+	doccoBatch(config, function() {
+		console.log("Finish batch processing")
+		end()
+	}, options)
+}
+
+var langConfig = function(configPath) {
+	var data = fs.readFileSync(configPath, 'utf8')
+
+	var rawConfig = JSON.parse(data)
+
+	return rawConfig.map(function(singleLangConfig) {
+		return _.extend(singleLangConfig, {
+			files: singleLangConfig.map(function(fileRegexStr) {
+				return new RegExp(fileRegexStr)
+			})
+		})
+	})
+}
+
+var copyResources = function(outputDir) {
+	var filesToCopy = [path.join(__dirname, "../resources/docco.css")]
+
+	filesToCopy.forEach(function(file) {
+		fs.createReadStream(file).pipe(fs.createWriteStream(path.join(outputDir, path.basename(file))))
+	})
+}

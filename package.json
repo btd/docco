@@ -22,6 +22,7 @@
     "highlight.js": "~7.3.0",
     "lodash": "~1.0.0-rc.2",
     "walk": "~2.2.1",
-    "mkdirp": "~0.3.4"
+    "mkdirp": "~0.3.4",
+    "commander": "~1.1.1"
   }
 }
