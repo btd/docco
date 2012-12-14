@@ -2,28 +2,28 @@
 
 It is a rewriten from scratch original docco generator, why i decide to rewrite it:
 
-	* Support of directories
-	*	Depends only from node and strong libraries, no process.exec
-	* Support any language and any comments styles - multilines, onelines - just fill config file and point generator on it
+* Support of directories
+* Depends only from node and strong libraries, no process.exec
+* Support any language and any comments styles - multilines, onelines - just fill config file and point generator on it
 
-# Examle usage
+## Examle usage
 
-	Show help:
-
-```
-	docco --help
-```
-
-	Process one single file:
+Show help:
 
 ```
-	docco file.js
+docco --help
 ```
-	Will be created file in current directory with name file.js.html and docco.css. It is all. To specify output directory use `-o` option (strongly recommended for batch processing).
 
-	By default it uses C-style comments `/*! comment */` and `// ... \n`. So i am sure you want to use another type of comments - fill language configuration file and specify it with `-l` option.
+Process one single file:
 
-	For example i have such configuration file: 
+```
+docco file.js
+```
+Will be created file in current directory with name file.js.html and docco.css. It is all. To specify output directory use `-o` option (strongly recommended for batch processing).
+
+By default it uses C-style comments `/*! comment */` and `// ... \n`. So i am sure you want to use another type of comments - fill language configuration file and specify it with `-l` option.
+
+For example i have such configuration file: 
 
 ```json
 [
@@ -52,23 +52,23 @@ Example usage:
 docco -l ./resources/languages.example.json ./lib/batch.js
 ```
 
-# Batch processing
+## Batch processing
 
 I strongly recommend add `-o` option for batch processing!!!
 
 To unable batch processing you can do one of the following things:
 
-	* Specify more then one file for processing:
+* Specify more then one file for processing:
 
-		```
-		docco -l ./resources/languages.example.json -o ./docs ./lib/batch.js ./lib/single.js
-		```
+```
+docco -l ./resources/languages.example.json -o ./docs ./lib/batch.js ./lib/single.js
+```
 
-	* Specify directory or set of directories or files (the same as above but mixed).
+* Specify directory or set of directories or files (the same as above but mixed).
 
-	* Specify option `-b`
+* Specify option `-b`
 
-	* Specify option `--batch-config <path to batch config>`
+* Specify option `--batch-config <path to batch config>`
 
 First 3 cases uses default filters for directories - skip files which starts from `.`. Last case used when you want to specify your own filters.
 
@@ -85,6 +85,12 @@ Example of batch config:
 ```
 
 So it is also array (you can add any numbers of entryes) with objects: `path` path to entry (usually directory), `config` - it is a language configuration for this entry (see example above), `filters` - it is array of strings, which will be excluded while traversing `path` location recusivly.
+
+For this package i am generating docs with this command:
+
+```
+docco -o docs -l ./resources/languages.example.json --title "Docco - documentaion generator" ./lib
+```
 
 ## License 
 
