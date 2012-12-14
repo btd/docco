@@ -34,10 +34,29 @@ var langConfig = function(configPath) {
 
 	var rawConfig = JSON.parse(data)
 
+	return processRawLangConfig(rawConfig)
+}
+
+var processRawLangConfig = function(rawConfig) {
 	return rawConfig.map(function(singleLangConfig) {
 		return _.extend(singleLangConfig, {
-			files: singleLangConfig.files.map(function(fileRegexStr) {
-				return new RegExp(fileRegexStr)
+			files: singleLangConfig.files.map(function(strRegex) {
+				return new RegExp(strRegex)
+			})
+		})
+	})
+}
+
+var batchConfig = function(configPath) {
+	var data = fs.readFileSync(configPath, 'utf8')
+
+	var rawConfig = JSON.parse(data)
+
+	return rawConfig.map(function(singleBatchConfig) {
+		return _.extend(singleBatchConfig, {
+			config: processRawLangConfig(singleBatchConfig.config),
+			filters: singleBatchConfig.filters.map(function(strRegex) {
+				return new RegExp(strRegex)
 			})
 		})
 	})
@@ -66,6 +85,16 @@ var options = {
 }
 
 var languageConfiguration = program.langConfig ? langConfig(program.langConfig) : defaultLanguageConfig
+
+if(program.batchConfig) {
+	var config = batchConfig(program.batchConfig)
+
+	runBatch(config, options, function() {
+		copyResources(program.output)
+	})
+
+	return
+}
 
 if(args.length === 0) {
 	console.log("You should specify source file or directory")

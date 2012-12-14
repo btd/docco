@@ -1,5 +1,10 @@
 [
 {
+	"lang": "css",
+	"comments": [["/*!", "*/"]],
+	"files": ["\\.css$"] 
+},
+{
 	"lang": "javascript",
 	"comments": [["/*!", "*/"], ["//", "\n"]],
 	"files": ["\\.js$"] 
