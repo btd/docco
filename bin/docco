@@ -22,7 +22,34 @@ program
   .option('-o, --output <path>', 'output path by default it is current directory, it is strongly recommended to specify it in batch mode', '.')
   .parse(process.argv)
 
+var runBatch = function(config, options, end) {
+	doccoBatch(config, function() {
+		console.log("Finish batch processing")
+		end()
+	}, options)
+}
 
+var langConfig = function(configPath) {
+	var data = fs.readFileSync(configPath, 'utf8')
+
+	var rawConfig = JSON.parse(data)
+
+	return rawConfig.map(function(singleLangConfig) {
+		return _.extend(singleLangConfig, {
+			files: singleLangConfig.map(function(fileRegexStr) {
+				return new RegExp(fileRegexStr)
+			})
+		})
+	})
+}
+
+var copyResources = function(outputDir) {
+	var filesToCopy = [path.join(__dirname, "../resources/docco.css")]
+
+	filesToCopy.forEach(function(file) {
+		fs.createReadStream(file).pipe(fs.createWriteStream(path.join(outputDir, path.basename(file))))
+	})
+}
 
 var defaultLanguageConfig = [{//fallback
 		"comments": [["/*!", "*/"], ["//", "\n"]],
@@ -84,31 +111,3 @@ if(args.length === 0) {
 	
 }
 
-var runBatch = function(config, options, end) {
-	doccoBatch(config, function() {
-		console.log("Finish batch processing")
-		end()
-	}, options)
-}
-
-var langConfig = function(configPath) {
-	var data = fs.readFileSync(configPath, 'utf8')
-
-	var rawConfig = JSON.parse(data)
-
-	return rawConfig.map(function(singleLangConfig) {
-		return _.extend(singleLangConfig, {
-			files: singleLangConfig.map(function(fileRegexStr) {
-				return new RegExp(fileRegexStr)
-			})
-		})
-	})
-}
-
-var copyResources = function(outputDir) {
-	var filesToCopy = [path.join(__dirname, "../resources/docco.css")]
-
-	filesToCopy.forEach(function(file) {
-		fs.createReadStream(file).pipe(fs.createWriteStream(path.join(outputDir, path.basename(file))))
-	})
-}
