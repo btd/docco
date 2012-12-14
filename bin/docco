@@ -36,7 +36,7 @@ var langConfig = function(configPath) {
 
 	return rawConfig.map(function(singleLangConfig) {
 		return _.extend(singleLangConfig, {
-			files: singleLangConfig.map(function(fileRegexStr) {
+			files: singleLangConfig.files.map(function(fileRegexStr) {
 				return new RegExp(fileRegexStr)
 			})
 		})
