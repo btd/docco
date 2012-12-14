@@ -1,7 +1,7 @@
 {
   "bin": { "docco": "./bin/docco"},
   "name": "docco-next",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Fork of docco with a lot of advanced features",
   "repository": "git://github.com/btd/docco.git",
   "keywords": [
