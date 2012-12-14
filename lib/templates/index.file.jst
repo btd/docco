@@ -12,11 +12,11 @@
 <div id="docco-index">
   <h1><%= title %></h1>
   <ul>
-  <% _(dirs).each(function(files, dir) { %>
+  <% _(dirs).each(function(dir) { %>
     <li>
-      <p><%= dir %></p>
+      <p><%= dir.name %></p>
       <ul>
-        <% _(files).each(function(file) { %>
+        <% _(dir.files).each(function(file) { %>
           <li><a href="<%= file %>.html"><%= file %></a></li>
         <% }) %>
       </ul>
