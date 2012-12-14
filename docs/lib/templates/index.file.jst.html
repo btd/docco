@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>index.file.jst</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../docco.css" />
+</head>
+<body>
+<div id="container">
+  <table cellspacing="0" cellpadding="0">
+    <thead>
+    <tr>
+      <th class="docs">
+        
+        <h1><a href="../../index.html" title="Back to index">&larr;</a>&nbsp;&nbsp;index.file.jst</h1>
+        
+      </th>
+      <th class="code"></th>
+    </tr>
+    </thead>
+    <tbody>
+    
+    
+    <tr id="section-1">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-1">#</a>
+        </div>
+      
+      </td>
+      <td class="code">
+      <pre><code ><span class="doctype">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;<span class="title">html</span>&gt;</span>
+<span class="tag">&lt;<span class="title">head</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">meta</span> <span class="attribute">http-equiv</span>=<span class="value">"content-type"</span> <span class="attribute">content</span>=<span class="value">"text/html;charset=utf-8"</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">title</span>&gt;</span><span class="vbscript">&lt;%= title %&gt;</span><span class="tag">&lt;/<span class="title">title</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">link</span> <span class="attribute">href</span>=<span class="value">"&lt;%= "</span><span class="attribute">docco.css</span>" %&gt;</span>"
+        rel="stylesheet"
+        type="text/css"
+        media="screen, projection"/&gt;
+<span class="tag">&lt;/<span class="title">head</span>&gt;</span>
+<span class="tag">&lt;<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"docco-index"</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">h1</span>&gt;</span><span class="vbscript">&lt;%= title %&gt;</span><span class="tag">&lt;/<span class="title">h1</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">ul</span>&gt;</span>
+  <span class="vbscript">&lt;% _(dirs).<span class="keyword">each</span>(<span class="keyword">function</span>(files, dir) { %&gt;</span>
+    <span class="tag">&lt;<span class="title">li</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">p</span>&gt;</span><span class="vbscript">&lt;%= dir %&gt;</span><span class="tag">&lt;/<span class="title">p</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">ul</span>&gt;</span>
+        <span class="vbscript">&lt;% _(files).<span class="keyword">each</span>(<span class="keyword">function</span>(file) { %&gt;</span>
+          <span class="tag">&lt;<span class="title">li</span>&gt;</span><span class="tag">&lt;<span class="title">a</span> <span class="attribute">href</span>=<span class="value">"&lt;%= file %&gt;.html"</span>&gt;</span><span class="vbscript">&lt;%= file %&gt;</span><span class="tag">&lt;/<span class="title">a</span>&gt;</span><span class="tag">&lt;/<span class="title">li</span>&gt;</span>
+        <span class="vbscript">&lt;% }) %&gt;</span>
+      <span class="tag">&lt;/<span class="title">ul</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">li</span>&gt;</span>
+  <span class="vbscript">&lt;% }) %&gt;</span>
+  <span class="tag">&lt;/<span class="title">ul</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span></code></pre>
+      </td>
+    </tr>
+    
+  </table>
+</div>
+</body>
+</html>
+
+
+
