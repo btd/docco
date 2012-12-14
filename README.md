@@ -77,9 +77,9 @@ Example of batch config:
 ```json
 [
 {
-	path: './lib',
-	config: languageConfig,
-	filters: [/^\.[^\/].*/, /\/\.[^\/]/]
+	"path": "./lib",
+	"config": { },
+	"filters": ["^\.[^\/].*", "\/\.[^\/]"]
 }
 ]
 ```
