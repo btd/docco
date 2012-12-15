@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>single.file.jst</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../docco.css" />
+</head>
+<body>
+<div id="container">
+  <table cellspacing="0" cellpadding="0">
+    <thead>
+    <tr>
+      <th class="docs">
+        
+        <h1><a href="../../index.html" title="Back to index">&larr;</a>&nbsp;&nbsp;single.file.jst</h1>
+        
+      </th>
+      <th class="code"></th>
+    </tr>
+    </thead>
+    <tbody>
+    
+    
+    <tr id="section-1">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-1">#</a>
+        </div>
+      
+      </td>
+      <td class="code">
+      <pre><code ><span class="xml"><span class="doctype">&lt;!DOCTYPE html&gt;</span>
+
+<span class="tag">&lt;<span class="title">html</span>&gt;</span>
+<span class="tag">&lt;<span class="title">head</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">title</span>&gt;</span><span class="vbscript">&lt;%= filename %&gt;</span><span class="tag">&lt;/<span class="title">title</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">meta</span> <span class="attribute">http-equiv</span>=<span class="value">"content-type"</span> <span class="attribute">content</span>=<span class="value">"text/html; charset=UTF-</span><span class="number">8</span><span class="xml">"&gt;
+  <span class="tag">&lt;<span class="title">link</span> <span class="attribute">rel</span>=<span class="value">"stylesheet"</span> <span class="attribute">media</span>=<span class="value">"all"</span> <span class="attribute">href</span>=<span class="value">"&lt;%= (rootDir ? rootDir : "</span><span class="attribute">.</span>") + "/<span class="attribute">docco.css</span>" %&gt;</span>" /&gt;
+<span class="tag">&lt;/<span class="title">head</span>&gt;</span>
+<span class="tag">&lt;<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"container"</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">table</span> <span class="attribute">cellspacing</span>=<span class="value">"</span><span class="number">0</span><span class="xml">" cellpadding="</span><span class="number">0</span><span class="xml">"&gt;
+    <span class="tag">&lt;<span class="title">thead</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">tr</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">th</span> <span class="attribute">class</span>=<span class="value">"docs"</span>&gt;</span>
+        <span class="vbscript">&lt;% <span class="keyword">if</span>(rootDir) { %&gt;</span>
+        <span class="tag">&lt;<span class="title">h1</span>&gt;</span><span class="tag">&lt;<span class="title">a</span> <span class="attribute">href</span>=<span class="value">"&lt;%= rootDir %&gt;/index.html"</span> <span class="attribute">title</span>=<span class="value">"Back to index"</span>&gt;</span>&amp;larr;<span class="tag">&lt;/<span class="title">a</span>&gt;</span>&amp;nbsp;&amp;nbsp;<span class="vbscript">&lt;%= filename %&gt;</span><span class="tag">&lt;/<span class="title">h1</span>&gt;</span>
+        <span class="vbscript">&lt;% } <span class="keyword">else</span> { %&gt;</span>
+        <span class="tag">&lt;<span class="title">h1</span>&gt;</span><span class="vbscript">&lt;%= filename %&gt;</span><span class="tag">&lt;/<span class="title">h1</span>&gt;</span>
+        <span class="vbscript">&lt;% } %&gt;</span>
+      <span class="tag">&lt;/<span class="title">th</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">th</span> <span class="attribute">class</span>=<span class="value">"code"</span>&gt;</span><span class="tag">&lt;/<span class="title">th</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">tr</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">thead</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">tbody</span>&gt;</span>
+    <span class="vbscript">&lt;% <span class="keyword">for</span> (var i=</span></span><span class="number">0</span><span class="xml">, l=sections.length; i<span class="tag">&lt;<span class="title">l;</span> <span class="attribute">i</span>++) { %&gt;</span>
+    <span class="vbscript">&lt;% var section = sections[i]; %&gt;</span>
+    <span class="tag">&lt;<span class="title">tr</span> <span class="attribute">id</span>=<span class="value">"section-&lt;%= i + </span><span class="number">1</span><span class="xml"> %&gt;"&gt;
+      <span class="tag">&lt;<span class="title">td</span> <span class="attribute">class</span>=<span class="value">"docs"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"octowrap"</span>&gt;</span>
+          <span class="tag">&lt;<span class="title">a</span> <span class="attribute">class</span>=<span class="value">"octothorpe"</span> <span class="attribute">href</span>=<span class="value">"#section-&lt;%= i + </span><span class="number">1</span><span class="xml"> %&gt;"&gt;#<span class="tag">&lt;/<span class="title">a</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+      <span class="vbscript">&lt;%= section.docHtml %&gt;</span>
+      <span class="tag">&lt;/<span class="title">td</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">td</span> <span class="attribute">class</span>=<span class="value">"code"</span>&gt;</span>
+      <span class="vbscript">&lt;%= section.codeHtml %&gt;</span>
+      <span class="tag">&lt;/<span class="title">td</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">tr</span>&gt;</span>
+    <span class="vbscript">&lt;% } %&gt;</span>
+  <span class="tag">&lt;/<span class="title">table</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span>
+
+
+
+</span></code></pre>
+      </td>
+    </tr>
+    
+  </table>
+</div>
+</body>
+</html>
+
+
+

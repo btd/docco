@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>processor.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../docco.css" />
+</head>
+<body>
+<div id="container">
+  <table cellspacing="0" cellpadding="0">
+    <thead>
+    <tr>
+      <th class="docs">
+        
+        <h1><a href="../index.html" title="Back to index">&larr;</a>&nbsp;&nbsp;processor.js</h1>
+        
+      </th>
+      <th class="code"></th>
+    </tr>
+    </thead>
+    <tbody>
+    
+    
+    <tr id="section-1">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-1">#</a>
+        </div>
+      
+      </td>
+      <td class="code">
+      <pre><code class="javascript"><span class="keyword">var</span> hljs = require(<span class="string">'highlight.js'</span>),
+		Showdown = require(<span class="string">'showdown'</span>)
+
+<span class="keyword">var</span> unescape = <span class="keyword">function</span>(value) {
+    <span class="keyword">return</span> value
+    	.replace(<span class="regexp">/&amp;amp;/gm</span>, <span class="string">'&amp;'</span>)
+    	.replace(<span class="regexp">/&amp;lt;/gm</span>, <span class="string">'&lt;'</span>)
+    	.replace(<span class="regexp">/&amp;gt;/gm</span>, <span class="string">'&gt;'</span>)
+}
+
+
+<span class="keyword">var</span> highlight = <span class="keyword">function</span>(converter) {
+  <span class="keyword">return</span> [
+      <span class="comment">/* seems better such blocks do not highlight
+      { type: 'output', filter: function(source){
+          return source.replace(/&lt;pre&gt;&lt;code&gt;([^&lt;]+)&lt;\/code&gt;&lt;\/pre&gt;/g, function(match, code) {
+              return wrapCode(hljs.highlightAuto(unescape(code)).value)
+          });
+      }},*/</span>
+      { type: <span class="string">'output'</span>, filter: <span class="keyword">function</span>(source){
+          <span class="keyword">return</span> source.replace(<span class="regexp">/&lt;pre&gt;&lt;code\s+class\="(\w+)"&gt;([^&lt;]+)&lt;\/code&gt;&lt;\/pre&gt;/g</span>, <span class="keyword">function</span>(match, language, code) {
+              <span class="keyword">return</span> wrapCode(hljs.highlight(language, unescape(code)).value, language)
+          });
+      }}
+  ];
+};
+
+<span class="keyword">var</span> converter = <span class="keyword">new</span> Showdown.converter({
+	extensions: [highlight]
+})
+
+<span class="keyword">var</span> processBlocks = <span class="keyword">function</span>(blocks, language) {
+	<span class="keyword">return</span> blocks.map(<span class="keyword">function</span>(block) {
+		<span class="keyword">return</span> processBlock(block, language)
+	})
+}
+
+<span class="keyword">var</span> processBlock = <span class="keyword">function</span>(block, language) {
+	<span class="keyword">return</span> {
+		codeHtml: wrapCode((language ? hljs.highlight(language, block.code): hljs.highlightAuto(block.code)).value, language),
+		docHtml: converter.makeHtml(block.comment)
+	}
+}
+
+<span class="keyword">var</span> wrapCode = <span class="keyword">function</span>(code, language) {
+	<span class="keyword">return</span> <span class="string">'&lt;pre&gt;&lt;code '</span> + (language ? (<span class="string">'class="'</span> + language + <span class="string">'"'</span>) : <span class="string">""</span>) +<span class="string">'&gt;'</span> + code + <span class="string">'&lt;/code&gt;&lt;/pre&gt;'</span>
+}
+
+module.exports.processBlocks = processBlocks
+
+module.exports.processBlock = processBlock
+
+
+</code></pre>
+      </td>
+    </tr>
+    
+  </table>
+</div>
+</body>
+</html>
+
+
+

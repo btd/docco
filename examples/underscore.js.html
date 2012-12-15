@@ -1,0 +1,2866 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>underscore.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="./docco.css" />
+</head>
+<body>
+<div id="container">
+  <table cellspacing="0" cellpadding="0">
+    <thead>
+    <tr>
+      <th class="docs">
+        
+        <h1>underscore.js</h1>
+        
+      </th>
+      <th class="code"></th>
+    </tr>
+    </thead>
+    <tbody>
+    
+    
+    <tr id="section-1">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-1">#</a>
+        </div>
+      <pre><code>Underscore.js 1.4.3
+http://underscorejs.org
+(c) 2009-2012 Jeremy Ashkenas, DocumentCloud Inc.
+Underscore may be freely distributed under the MIT license.
+</code></pre>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">
+(<span class="keyword">function</span>() {
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-2">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-2">#</a>
+        </div>
+      <h2 id="baselinesetup">Baseline setup</h2>
+
+<p>Establish the root object, <code>window</code> in the browser, or <code>global</code> on the server.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> root = <span class="keyword">this</span>;
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-3">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-3">#</a>
+        </div>
+      <p>Save the previous value of the <code>_</code> variable.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> previousUnderscore = root._;
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-4">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-4">#</a>
+        </div>
+      <p>Establish the object that gets returned to break out of a loop iteration.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> breaker = {};
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-5">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-5">#</a>
+        </div>
+      <p>Save bytes in the minified (but not gzipped) version:</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> ArrayProto = Array.prototype, ObjProto = Object.prototype, FuncProto = Function.prototype;
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-6">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-6">#</a>
+        </div>
+      <p>Create quick reference variables for speed access to core prototypes.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> push             = ArrayProto.push,
+      slice            = ArrayProto.slice,
+      concat           = ArrayProto.concat,
+      toString         = ObjProto.toString,
+      hasOwnProperty   = ObjProto.hasOwnProperty;
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-7">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-7">#</a>
+        </div>
+      <p>All <strong>ECMAScript 5</strong> native function implementations that we hope to use
+are declared here.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span>
+    nativeForEach      = ArrayProto.forEach,
+    nativeMap          = ArrayProto.map,
+    nativeReduce       = ArrayProto.reduce,
+    nativeReduceRight  = ArrayProto.reduceRight,
+    nativeFilter       = ArrayProto.filter,
+    nativeEvery        = ArrayProto.every,
+    nativeSome         = ArrayProto.some,
+    nativeIndexOf      = ArrayProto.indexOf,
+    nativeLastIndexOf  = ArrayProto.lastIndexOf,
+    nativeIsArray      = Array.isArray,
+    nativeKeys         = Object.keys,
+    nativeBind         = FuncProto.bind;
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-8">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-8">#</a>
+        </div>
+      <p>Create a safe reference to the Underscore object for use below.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> _ = <span class="keyword">function</span>(obj) {
+    <span class="keyword">if</span> (obj <span class="keyword">instanceof</span> _) <span class="keyword">return</span> obj;
+    <span class="keyword">if</span> (!(<span class="keyword">this</span> <span class="keyword">instanceof</span> _)) <span class="keyword">return</span> <span class="keyword">new</span> _(obj);
+    <span class="keyword">this</span>._wrapped = obj;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-9">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-9">#</a>
+        </div>
+      <p>Export the Underscore object for <strong>Node.js</strong>, with
+backwards-compatibility for the old <code>require()</code> API. If we're in
+the browser, add <code>_</code> as a global object via a string identifier,
+for Closure Compiler "advanced" mode.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">if</span> (<span class="keyword">typeof</span> exports !== <span class="string">'undefined'</span>) {
+    <span class="keyword">if</span> (<span class="keyword">typeof</span> module !== <span class="string">'undefined'</span> &amp;&amp; module.exports) {
+      exports = module.exports = _;
+    }
+    exports._ = _;
+  } <span class="keyword">else</span> {
+    root._ = _;
+  }
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-10">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-10">#</a>
+        </div>
+      <p>Current version.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.VERSION = <span class="string">'1.4.3'</span>;
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-11">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-11">#</a>
+        </div>
+      <h2 id="collectionfunctions">Collection Functions</h2>
+
+<p>The cornerstone, an <code>each</code> implementation, aka <code>forEach</code>.
+Handles objects with the built-in <code>forEach</code>, arrays, and raw objects.
+Delegates to <strong>ECMAScript 5</strong>'s native <code>forEach</code> if available.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> each = _.each = _.forEach = <span class="keyword">function</span>(obj, iterator, context) {
+    <span class="keyword">if</span> (obj == <span class="literal">null</span>) <span class="keyword">return</span>;
+    <span class="keyword">if</span> (nativeForEach &amp;&amp; obj.forEach === nativeForEach) {
+      obj.forEach(iterator, context);
+    } <span class="keyword">else</span> <span class="keyword">if</span> (obj.length === +obj.length) {
+      <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, l = obj.length; i &lt; l; i++) {
+        <span class="keyword">if</span> (iterator.call(context, obj[i], i, obj) === breaker) <span class="keyword">return</span>;
+      }
+    } <span class="keyword">else</span> {
+      <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> obj) {
+        <span class="keyword">if</span> (_.has(obj, key)) {
+          <span class="keyword">if</span> (iterator.call(context, obj[key], key, obj) === breaker) <span class="keyword">return</span>;
+        }
+      }
+    }
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-12">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-12">#</a>
+        </div>
+      <p>Return the results of applying the iterator to each element.
+Delegates to <strong>ECMAScript 5</strong>'s native <code>map</code> if available.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.map = _.collect = <span class="keyword">function</span>(obj, iterator, context) {
+    <span class="keyword">var</span> results = [];
+    <span class="keyword">if</span> (obj == <span class="literal">null</span>) <span class="keyword">return</span> results;
+    <span class="keyword">if</span> (nativeMap &amp;&amp; obj.map === nativeMap) <span class="keyword">return</span> obj.map(iterator, context);
+    each(obj, <span class="keyword">function</span>(value, index, list) {
+      results[results.length] = iterator.call(context, value, index, list);
+    });
+    <span class="keyword">return</span> results;
+  };
+
+  <span class="keyword">var</span> reduceError = <span class="string">'Reduce of empty array with no initial value'</span>;
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-13">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-13">#</a>
+        </div>
+      <p><strong>Reduce</strong> builds up a single result from a list of values, aka <code>inject</code>,
+or <code>foldl</code>. Delegates to <strong>ECMAScript 5</strong>'s native <code>reduce</code> if available.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.reduce = _.foldl = _.inject = <span class="keyword">function</span>(obj, iterator, memo, context) {
+    <span class="keyword">var</span> initial = arguments.length &gt; <span class="number">2</span>;
+    <span class="keyword">if</span> (obj == <span class="literal">null</span>) obj = [];
+    <span class="keyword">if</span> (nativeReduce &amp;&amp; obj.reduce === nativeReduce) {
+      <span class="keyword">if</span> (context) iterator = _.bind(iterator, context);
+      <span class="keyword">return</span> initial ? obj.reduce(iterator, memo) : obj.reduce(iterator);
+    }
+    each(obj, <span class="keyword">function</span>(value, index, list) {
+      <span class="keyword">if</span> (!initial) {
+        memo = value;
+        initial = <span class="literal">true</span>;
+      } <span class="keyword">else</span> {
+        memo = iterator.call(context, memo, value, index, list);
+      }
+    });
+    <span class="keyword">if</span> (!initial) <span class="keyword">throw</span> <span class="keyword">new</span> TypeError(reduceError);
+    <span class="keyword">return</span> memo;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-14">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-14">#</a>
+        </div>
+      <p>The right-associative version of reduce, also known as <code>foldr</code>.
+Delegates to <strong>ECMAScript 5</strong>'s native <code>reduceRight</code> if available.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.reduceRight = _.foldr = <span class="keyword">function</span>(obj, iterator, memo, context) {
+    <span class="keyword">var</span> initial = arguments.length &gt; <span class="number">2</span>;
+    <span class="keyword">if</span> (obj == <span class="literal">null</span>) obj = [];
+    <span class="keyword">if</span> (nativeReduceRight &amp;&amp; obj.reduceRight === nativeReduceRight) {
+      <span class="keyword">if</span> (context) iterator = _.bind(iterator, context);
+      <span class="keyword">return</span> initial ? obj.reduceRight(iterator, memo) : obj.reduceRight(iterator);
+    }
+    <span class="keyword">var</span> length = obj.length;
+    <span class="keyword">if</span> (length !== +length) {
+      <span class="keyword">var</span> keys = _.keys(obj);
+      length = keys.length;
+    }
+    each(obj, <span class="keyword">function</span>(value, index, list) {
+      index = keys ? keys[--length] : --length;
+      <span class="keyword">if</span> (!initial) {
+        memo = obj[index];
+        initial = <span class="literal">true</span>;
+      } <span class="keyword">else</span> {
+        memo = iterator.call(context, memo, obj[index], index, list);
+      }
+    });
+    <span class="keyword">if</span> (!initial) <span class="keyword">throw</span> <span class="keyword">new</span> TypeError(reduceError);
+    <span class="keyword">return</span> memo;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-15">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-15">#</a>
+        </div>
+      <p>Return the first value which passes a truth test. Aliased as <code>detect</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.find = _.detect = <span class="keyword">function</span>(obj, iterator, context) {
+    <span class="keyword">var</span> result;
+    any(obj, <span class="keyword">function</span>(value, index, list) {
+      <span class="keyword">if</span> (iterator.call(context, value, index, list)) {
+        result = value;
+        <span class="keyword">return</span> <span class="literal">true</span>;
+      }
+    });
+    <span class="keyword">return</span> result;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-16">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-16">#</a>
+        </div>
+      <p>Return all the elements that pass a truth test.
+Delegates to <strong>ECMAScript 5</strong>'s native <code>filter</code> if available.
+Aliased as <code>select</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.filter = _.select = <span class="keyword">function</span>(obj, iterator, context) {
+    <span class="keyword">var</span> results = [];
+    <span class="keyword">if</span> (obj == <span class="literal">null</span>) <span class="keyword">return</span> results;
+    <span class="keyword">if</span> (nativeFilter &amp;&amp; obj.filter === nativeFilter) <span class="keyword">return</span> obj.filter(iterator, context);
+    each(obj, <span class="keyword">function</span>(value, index, list) {
+      <span class="keyword">if</span> (iterator.call(context, value, index, list)) results[results.length] = value;
+    });
+    <span class="keyword">return</span> results;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-17">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-17">#</a>
+        </div>
+      <p>Return all the elements for which a truth test fails.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.reject = <span class="keyword">function</span>(obj, iterator, context) {
+    <span class="keyword">return</span> _.filter(obj, <span class="keyword">function</span>(value, index, list) {
+      <span class="keyword">return</span> !iterator.call(context, value, index, list);
+    }, context);
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-18">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-18">#</a>
+        </div>
+      <p>Determine whether all of the elements match a truth test.
+Delegates to <strong>ECMAScript 5</strong>'s native <code>every</code> if available.
+Aliased as <code>all</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.every = _.all = <span class="keyword">function</span>(obj, iterator, context) {
+    iterator || (iterator = _.identity);
+    <span class="keyword">var</span> result = <span class="literal">true</span>;
+    <span class="keyword">if</span> (obj == <span class="literal">null</span>) <span class="keyword">return</span> result;
+    <span class="keyword">if</span> (nativeEvery &amp;&amp; obj.every === nativeEvery) <span class="keyword">return</span> obj.every(iterator, context);
+    each(obj, <span class="keyword">function</span>(value, index, list) {
+      <span class="keyword">if</span> (!(result = result &amp;&amp; iterator.call(context, value, index, list))) <span class="keyword">return</span> breaker;
+    });
+    <span class="keyword">return</span> !!result;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-19">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-19">#</a>
+        </div>
+      <p>Determine if at least one element in the object matches a truth test.
+Delegates to <strong>ECMAScript 5</strong>'s native <code>some</code> if available.
+Aliased as <code>any</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> any = _.some = _.any = <span class="keyword">function</span>(obj, iterator, context) {
+    iterator || (iterator = _.identity);
+    <span class="keyword">var</span> result = <span class="literal">false</span>;
+    <span class="keyword">if</span> (obj == <span class="literal">null</span>) <span class="keyword">return</span> result;
+    <span class="keyword">if</span> (nativeSome &amp;&amp; obj.some === nativeSome) <span class="keyword">return</span> obj.some(iterator, context);
+    each(obj, <span class="keyword">function</span>(value, index, list) {
+      <span class="keyword">if</span> (result || (result = iterator.call(context, value, index, list))) <span class="keyword">return</span> breaker;
+    });
+    <span class="keyword">return</span> !!result;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-20">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-20">#</a>
+        </div>
+      <p>Determine if the array or object contains a given value (using <code>===</code>).
+Aliased as <code>include</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.contains = _.include = <span class="keyword">function</span>(obj, target) {
+    <span class="keyword">if</span> (obj == <span class="literal">null</span>) <span class="keyword">return</span> <span class="literal">false</span>;
+    <span class="keyword">if</span> (nativeIndexOf &amp;&amp; obj.indexOf === nativeIndexOf) <span class="keyword">return</span> obj.indexOf(target) != -<span class="number">1</span>;
+    <span class="keyword">return</span> any(obj, <span class="keyword">function</span>(value) {
+      <span class="keyword">return</span> value === target;
+    });
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-21">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-21">#</a>
+        </div>
+      <p>Invoke a method (with arguments) on every item in a collection.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.invoke = <span class="keyword">function</span>(obj, method) {
+    <span class="keyword">var</span> args = slice.call(arguments, <span class="number">2</span>);
+    <span class="keyword">return</span> _.map(obj, <span class="keyword">function</span>(value) {
+      <span class="keyword">return</span> (_.isFunction(method) ? method : value[method]).apply(value, args);
+    });
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-22">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-22">#</a>
+        </div>
+      <p>Convenience version of a common use case of <code>map</code>: fetching a property.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.pluck = <span class="keyword">function</span>(obj, key) {
+    <span class="keyword">return</span> _.map(obj, <span class="keyword">function</span>(value){ <span class="keyword">return</span> value[key]; });
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-23">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-23">#</a>
+        </div>
+      <p>Convenience version of a common use case of <code>filter</code>: selecting only objects
+with specific <code>key:value</code> pairs.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.where = <span class="keyword">function</span>(obj, attrs) {
+    <span class="keyword">if</span> (_.isEmpty(attrs)) <span class="keyword">return</span> [];
+    <span class="keyword">return</span> _.filter(obj, <span class="keyword">function</span>(value) {
+      <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> attrs) {
+        <span class="keyword">if</span> (attrs[key] !== value[key]) <span class="keyword">return</span> <span class="literal">false</span>;
+      }
+      <span class="keyword">return</span> <span class="literal">true</span>;
+    });
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-24">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-24">#</a>
+        </div>
+      <p>Return the maximum element or (element-based computation).
+Can't optimize arrays of integers longer than 65,535 elements.
+See: https://bugs.webkit.org/show_bug.cgi?id=80797</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.max = <span class="keyword">function</span>(obj, iterator, context) {
+    <span class="keyword">if</span> (!iterator &amp;&amp; _.isArray(obj) &amp;&amp; obj[<span class="number">0</span>] === +obj[<span class="number">0</span>] &amp;&amp; obj.length &lt; <span class="number">65535</span>) {
+      <span class="keyword">return</span> Math.max.apply(Math, obj);
+    }
+    <span class="keyword">if</span> (!iterator &amp;&amp; _.isEmpty(obj)) <span class="keyword">return</span> -<span class="literal">Infinity</span>;
+    <span class="keyword">var</span> result = {computed : -<span class="literal">Infinity</span>, value: -<span class="literal">Infinity</span>};
+    each(obj, <span class="keyword">function</span>(value, index, list) {
+      <span class="keyword">var</span> computed = iterator ? iterator.call(context, value, index, list) : value;
+      computed &gt;= result.computed &amp;&amp; (result = {value : value, computed : computed});
+    });
+    <span class="keyword">return</span> result.value;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-25">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-25">#</a>
+        </div>
+      <p>Return the minimum element (or element-based computation).</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.min = <span class="keyword">function</span>(obj, iterator, context) {
+    <span class="keyword">if</span> (!iterator &amp;&amp; _.isArray(obj) &amp;&amp; obj[<span class="number">0</span>] === +obj[<span class="number">0</span>] &amp;&amp; obj.length &lt; <span class="number">65535</span>) {
+      <span class="keyword">return</span> Math.min.apply(Math, obj);
+    }
+    <span class="keyword">if</span> (!iterator &amp;&amp; _.isEmpty(obj)) <span class="keyword">return</span> <span class="literal">Infinity</span>;
+    <span class="keyword">var</span> result = {computed : <span class="literal">Infinity</span>, value: <span class="literal">Infinity</span>};
+    each(obj, <span class="keyword">function</span>(value, index, list) {
+      <span class="keyword">var</span> computed = iterator ? iterator.call(context, value, index, list) : value;
+      computed &lt; result.computed &amp;&amp; (result = {value : value, computed : computed});
+    });
+    <span class="keyword">return</span> result.value;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-26">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-26">#</a>
+        </div>
+      <p>Shuffle an array.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.shuffle = <span class="keyword">function</span>(obj) {
+    <span class="keyword">var</span> rand;
+    <span class="keyword">var</span> index = <span class="number">0</span>;
+    <span class="keyword">var</span> shuffled = [];
+    each(obj, <span class="keyword">function</span>(value) {
+      rand = _.random(index++);
+      shuffled[index - <span class="number">1</span>] = shuffled[rand];
+      shuffled[rand] = value;
+    });
+    <span class="keyword">return</span> shuffled;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-27">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-27">#</a>
+        </div>
+      <p>An internal function to generate lookup iterators.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> lookupIterator = <span class="keyword">function</span>(value) {
+    <span class="keyword">return</span> _.isFunction(value) ? value : <span class="keyword">function</span>(obj){ <span class="keyword">return</span> obj[value]; };
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-28">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-28">#</a>
+        </div>
+      <p>Sort the object's values by a criterion produced by an iterator.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.sortBy = <span class="keyword">function</span>(obj, value, context) {
+    <span class="keyword">var</span> iterator = lookupIterator(value);
+    <span class="keyword">return</span> _.pluck(_.map(obj, <span class="keyword">function</span>(value, index, list) {
+      <span class="keyword">return</span> {
+        value : value,
+        index : index,
+        criteria : iterator.call(context, value, index, list)
+      };
+    }).sort(<span class="keyword">function</span>(left, right) {
+      <span class="keyword">var</span> a = left.criteria;
+      <span class="keyword">var</span> b = right.criteria;
+      <span class="keyword">if</span> (a !== b) {
+        <span class="keyword">if</span> (a &gt; b || a === <span class="keyword">void</span> <span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;
+        <span class="keyword">if</span> (a &lt; b || b === <span class="keyword">void</span> <span class="number">0</span>) <span class="keyword">return</span> -<span class="number">1</span>;
+      }
+      <span class="keyword">return</span> left.index &lt; right.index ? -<span class="number">1</span> : <span class="number">1</span>;
+    }), <span class="string">'value'</span>);
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-29">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-29">#</a>
+        </div>
+      <p>An internal function used for aggregate "group by" operations.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> group = <span class="keyword">function</span>(obj, value, context, behavior) {
+    <span class="keyword">var</span> result = {};
+    <span class="keyword">var</span> iterator = lookupIterator(value || _.identity);
+    each(obj, <span class="keyword">function</span>(value, index) {
+      <span class="keyword">var</span> key = iterator.call(context, value, index, obj);
+      behavior(result, key, value);
+    });
+    <span class="keyword">return</span> result;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-30">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-30">#</a>
+        </div>
+      <p>Groups the object's values by a criterion. Pass either a string attribute
+to group by, or a function that returns the criterion.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.groupBy = <span class="keyword">function</span>(obj, value, context) {
+    <span class="keyword">return</span> group(obj, value, context, <span class="keyword">function</span>(result, key, value) {
+      (_.has(result, key) ? result[key] : (result[key] = [])).push(value);
+    });
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-31">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-31">#</a>
+        </div>
+      <p>Counts instances of an object that group by a certain criterion. Pass
+either a string attribute to count by, or a function that returns the
+criterion.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.countBy = <span class="keyword">function</span>(obj, value, context) {
+    <span class="keyword">return</span> group(obj, value, context, <span class="keyword">function</span>(result, key) {
+      <span class="keyword">if</span> (!_.has(result, key)) result[key] = <span class="number">0</span>;
+      result[key]++;
+    });
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-32">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-32">#</a>
+        </div>
+      <p>Use a comparator function to figure out the smallest index at which
+an object should be inserted so as to maintain order. Uses binary search.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.sortedIndex = <span class="keyword">function</span>(array, obj, iterator, context) {
+    iterator = iterator == <span class="literal">null</span> ? _.identity : lookupIterator(iterator);
+    <span class="keyword">var</span> value = iterator.call(context, obj);
+    <span class="keyword">var</span> low = <span class="number">0</span>, high = array.length;
+    <span class="keyword">while</span> (low &lt; high) {
+      <span class="keyword">var</span> mid = (low + high) &gt;&gt;&gt; <span class="number">1</span>;
+      iterator.call(context, array[mid]) &lt; value ? low = mid + <span class="number">1</span> : high = mid;
+    }
+    <span class="keyword">return</span> low;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-33">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-33">#</a>
+        </div>
+      <p>Safely convert anything iterable into a real, live array.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.toArray = <span class="keyword">function</span>(obj) {
+    <span class="keyword">if</span> (!obj) <span class="keyword">return</span> [];
+    <span class="keyword">if</span> (_.isArray(obj)) <span class="keyword">return</span> slice.call(obj);
+    <span class="keyword">if</span> (obj.length === +obj.length) <span class="keyword">return</span> _.map(obj, _.identity);
+    <span class="keyword">return</span> _.values(obj);
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-34">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-34">#</a>
+        </div>
+      <p>Return the number of elements in an object.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.size = <span class="keyword">function</span>(obj) {
+    <span class="keyword">if</span> (obj == <span class="literal">null</span>) <span class="keyword">return</span> <span class="number">0</span>;
+    <span class="keyword">return</span> (obj.length === +obj.length) ? obj.length : _.keys(obj).length;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-35">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-35">#</a>
+        </div>
+      <h2 id="arrayfunctions">Array Functions</h2>
+
+<p>Get the first element of an array. Passing <strong>n</strong> will return the first N
+values in the array. Aliased as <code>head</code> and <code>take</code>. The <strong>guard</strong> check
+allows it to work with <code>_.map</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.first = _.head = _.take = <span class="keyword">function</span>(array, n, guard) {
+    <span class="keyword">if</span> (array == <span class="literal">null</span>) <span class="keyword">return</span> <span class="keyword">void</span> <span class="number">0</span>;
+    <span class="keyword">return</span> (n != <span class="literal">null</span>) &amp;&amp; !guard ? slice.call(array, <span class="number">0</span>, n) : array[<span class="number">0</span>];
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-36">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-36">#</a>
+        </div>
+      <p>Returns everything but the last entry of the array. Especially useful on
+the arguments object. Passing <strong>n</strong> will return all the values in
+the array, excluding the last N. The <strong>guard</strong> check allows it to work with
+<code>_.map</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.initial = <span class="keyword">function</span>(array, n, guard) {
+    <span class="keyword">return</span> slice.call(array, <span class="number">0</span>, array.length - ((n == <span class="literal">null</span>) || guard ? <span class="number">1</span> : n));
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-37">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-37">#</a>
+        </div>
+      <p>Get the last element of an array. Passing <strong>n</strong> will return the last N
+values in the array. The <strong>guard</strong> check allows it to work with <code>_.map</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.last = <span class="keyword">function</span>(array, n, guard) {
+    <span class="keyword">if</span> (array == <span class="literal">null</span>) <span class="keyword">return</span> <span class="keyword">void</span> <span class="number">0</span>;
+    <span class="keyword">if</span> ((n != <span class="literal">null</span>) &amp;&amp; !guard) {
+      <span class="keyword">return</span> slice.call(array, Math.max(array.length - n, <span class="number">0</span>));
+    } <span class="keyword">else</span> {
+      <span class="keyword">return</span> array[array.length - <span class="number">1</span>];
+    }
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-38">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-38">#</a>
+        </div>
+      <p>Returns everything but the first entry of the array. Aliased as <code>tail</code> and <code>drop</code>.
+Especially useful on the arguments object. Passing an <strong>n</strong> will return
+the rest N values in the array. The <strong>guard</strong>
+check allows it to work with <code>_.map</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.rest = _.tail = _.drop = <span class="keyword">function</span>(array, n, guard) {
+    <span class="keyword">return</span> slice.call(array, (n == <span class="literal">null</span>) || guard ? <span class="number">1</span> : n);
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-39">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-39">#</a>
+        </div>
+      <p>Trim out all falsy values from an array.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.compact = <span class="keyword">function</span>(array) {
+    <span class="keyword">return</span> _.filter(array, _.identity);
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-40">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-40">#</a>
+        </div>
+      <p>Internal implementation of a recursive <code>flatten</code> function.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> flatten = <span class="keyword">function</span>(input, shallow, output) {
+    each(input, <span class="keyword">function</span>(value) {
+      <span class="keyword">if</span> (_.isArray(value)) {
+        shallow ? push.apply(output, value) : flatten(value, shallow, output);
+      } <span class="keyword">else</span> {
+        output.push(value);
+      }
+    });
+    <span class="keyword">return</span> output;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-41">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-41">#</a>
+        </div>
+      <p>Return a completely flattened version of an array.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.flatten = <span class="keyword">function</span>(array, shallow) {
+    <span class="keyword">return</span> flatten(array, shallow, []);
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-42">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-42">#</a>
+        </div>
+      <p>Return a version of the array that does not contain the specified value(s).</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.without = <span class="keyword">function</span>(array) {
+    <span class="keyword">return</span> _.difference(array, slice.call(arguments, <span class="number">1</span>));
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-43">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-43">#</a>
+        </div>
+      <p>Produce a duplicate-free version of the array. If the array has already
+been sorted, you have the option of using a faster algorithm.
+Aliased as <code>unique</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.uniq = _.unique = <span class="keyword">function</span>(array, isSorted, iterator, context) {
+    <span class="keyword">if</span> (_.isFunction(isSorted)) {
+      context = iterator;
+      iterator = isSorted;
+      isSorted = <span class="literal">false</span>;
+    }
+    <span class="keyword">var</span> initial = iterator ? _.map(array, iterator, context) : array;
+    <span class="keyword">var</span> results = [];
+    <span class="keyword">var</span> seen = [];
+    each(initial, <span class="keyword">function</span>(value, index) {
+      <span class="keyword">if</span> (isSorted ? (!index || seen[seen.length - <span class="number">1</span>] !== value) : !_.contains(seen, value)) {
+        seen.push(value);
+        results.push(array[index]);
+      }
+    });
+    <span class="keyword">return</span> results;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-44">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-44">#</a>
+        </div>
+      <p>Produce an array that contains the union: each distinct element from all of
+the passed-in arrays.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.union = <span class="keyword">function</span>() {
+    <span class="keyword">return</span> _.uniq(concat.apply(ArrayProto, arguments));
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-45">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-45">#</a>
+        </div>
+      <p>Produce an array that contains every item shared between all the
+passed-in arrays.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.intersection = <span class="keyword">function</span>(array) {
+    <span class="keyword">var</span> rest = slice.call(arguments, <span class="number">1</span>);
+    <span class="keyword">return</span> _.filter(_.uniq(array), <span class="keyword">function</span>(item) {
+      <span class="keyword">return</span> _.every(rest, <span class="keyword">function</span>(other) {
+        <span class="keyword">return</span> _.indexOf(other, item) &gt;= <span class="number">0</span>;
+      });
+    });
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-46">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-46">#</a>
+        </div>
+      <p>Take the difference between one array and a number of other arrays.
+Only the elements present in just the first array will remain.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.difference = <span class="keyword">function</span>(array) {
+    <span class="keyword">var</span> rest = concat.apply(ArrayProto, slice.call(arguments, <span class="number">1</span>));
+    <span class="keyword">return</span> _.filter(array, <span class="keyword">function</span>(value){ <span class="keyword">return</span> !_.contains(rest, value); });
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-47">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-47">#</a>
+        </div>
+      <p>Zip together multiple lists into a single array -- elements that share
+an index go together.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.zip = <span class="keyword">function</span>() {
+    <span class="keyword">var</span> args = slice.call(arguments);
+    <span class="keyword">var</span> length = _.max(_.pluck(args, <span class="string">'length'</span>));
+    <span class="keyword">var</span> results = <span class="keyword">new</span> Array(length);
+    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; length; i++) {
+      results[i] = _.pluck(args, <span class="string">""</span> + i);
+    }
+    <span class="keyword">return</span> results;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-48">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-48">#</a>
+        </div>
+      <p>Converts lists into objects. Pass either a single array of <code>[key, value]</code>
+pairs, or two parallel arrays of the same length -- one of keys, and one of
+the corresponding values.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.object = <span class="keyword">function</span>(list, values) {
+    <span class="keyword">if</span> (list == <span class="literal">null</span>) <span class="keyword">return</span> {};
+    <span class="keyword">var</span> result = {};
+    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, l = list.length; i &lt; l; i++) {
+      <span class="keyword">if</span> (values) {
+        result[list[i]] = values[i];
+      } <span class="keyword">else</span> {
+        result[list[i][<span class="number">0</span>]] = list[i][<span class="number">1</span>];
+      }
+    }
+    <span class="keyword">return</span> result;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-49">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-49">#</a>
+        </div>
+      <p>If the browser doesn't supply us with indexOf (I'm looking at you, <strong>MSIE</strong>),
+we need this function. Return the position of the first occurrence of an
+item in an array, or -1 if the item is not included in the array.
+Delegates to <strong>ECMAScript 5</strong>'s native <code>indexOf</code> if available.
+If the array is large and already in sort order, pass <code>true</code>
+for <strong>isSorted</strong> to use binary search.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.indexOf = <span class="keyword">function</span>(array, item, isSorted) {
+    <span class="keyword">if</span> (array == <span class="literal">null</span>) <span class="keyword">return</span> -<span class="number">1</span>;
+    <span class="keyword">var</span> i = <span class="number">0</span>, l = array.length;
+    <span class="keyword">if</span> (isSorted) {
+      <span class="keyword">if</span> (<span class="keyword">typeof</span> isSorted == <span class="string">'number'</span>) {
+        i = (isSorted &lt; <span class="number">0</span> ? Math.max(<span class="number">0</span>, l + isSorted) : isSorted);
+      } <span class="keyword">else</span> {
+        i = _.sortedIndex(array, item);
+        <span class="keyword">return</span> array[i] === item ? i : -<span class="number">1</span>;
+      }
+    }
+    <span class="keyword">if</span> (nativeIndexOf &amp;&amp; array.indexOf === nativeIndexOf) <span class="keyword">return</span> array.indexOf(item, isSorted);
+    <span class="keyword">for</span> (; i &lt; l; i++) <span class="keyword">if</span> (array[i] === item) <span class="keyword">return</span> i;
+    <span class="keyword">return</span> -<span class="number">1</span>;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-50">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-50">#</a>
+        </div>
+      <p>Delegates to <strong>ECMAScript 5</strong>'s native <code>lastIndexOf</code> if available.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.lastIndexOf = <span class="keyword">function</span>(array, item, from) {
+    <span class="keyword">if</span> (array == <span class="literal">null</span>) <span class="keyword">return</span> -<span class="number">1</span>;
+    <span class="keyword">var</span> hasIndex = from != <span class="literal">null</span>;
+    <span class="keyword">if</span> (nativeLastIndexOf &amp;&amp; array.lastIndexOf === nativeLastIndexOf) {
+      <span class="keyword">return</span> hasIndex ? array.lastIndexOf(item, from) : array.lastIndexOf(item);
+    }
+    <span class="keyword">var</span> i = (hasIndex ? from : array.length);
+    <span class="keyword">while</span> (i--) <span class="keyword">if</span> (array[i] === item) <span class="keyword">return</span> i;
+    <span class="keyword">return</span> -<span class="number">1</span>;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-51">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-51">#</a>
+        </div>
+      <p>Generate an integer Array containing an arithmetic progression. A port of
+the native Python <code>range()</code> function. See
+<a href="http://docs.python.org/library/functions.html#range">the Python documentation</a>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.range = <span class="keyword">function</span>(start, stop, step) {
+    <span class="keyword">if</span> (arguments.length &lt;= <span class="number">1</span>) {
+      stop = start || <span class="number">0</span>;
+      start = <span class="number">0</span>;
+    }
+    step = arguments[<span class="number">2</span>] || <span class="number">1</span>;
+
+    <span class="keyword">var</span> len = Math.max(Math.ceil((stop - start) / step), <span class="number">0</span>);
+    <span class="keyword">var</span> idx = <span class="number">0</span>;
+    <span class="keyword">var</span> range = <span class="keyword">new</span> Array(len);
+
+    <span class="keyword">while</span>(idx &lt; len) {
+      range[idx++] = start;
+      start += step;
+    }
+
+    <span class="keyword">return</span> range;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-52">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-52">#</a>
+        </div>
+      <h2 id="functionahemfunctions">Function (ahem) Functions</h2>
+
+<p>Reusable constructor function for prototype setting.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> ctor = <span class="keyword">function</span>(){};
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-53">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-53">#</a>
+        </div>
+      <p>Create a function bound to a given object (assigning <code>this</code>, and arguments,
+optionally). Binding with arguments is also known as <code>curry</code>.
+Delegates to <strong>ECMAScript 5</strong>'s native <code>Function.bind</code> if available.
+We check for <code>func.bind</code> first, to fail fast when <code>func</code> is undefined.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.bind = <span class="keyword">function</span>(func, context) {
+    <span class="keyword">var</span> args, bound;
+    <span class="keyword">if</span> (func.bind === nativeBind &amp;&amp; nativeBind) <span class="keyword">return</span> nativeBind.apply(func, slice.call(arguments, <span class="number">1</span>));
+    <span class="keyword">if</span> (!_.isFunction(func)) <span class="keyword">throw</span> <span class="keyword">new</span> TypeError;
+    args = slice.call(arguments, <span class="number">2</span>);
+    <span class="keyword">return</span> bound = <span class="keyword">function</span>() {
+      <span class="keyword">if</span> (!(<span class="keyword">this</span> <span class="keyword">instanceof</span> bound)) <span class="keyword">return</span> func.apply(context, args.concat(slice.call(arguments)));
+      ctor.prototype = func.prototype;
+      <span class="keyword">var</span> self = <span class="keyword">new</span> ctor;
+      ctor.prototype = <span class="literal">null</span>;
+      <span class="keyword">var</span> result = func.apply(self, args.concat(slice.call(arguments)));
+      <span class="keyword">if</span> (Object(result) === result) <span class="keyword">return</span> result;
+      <span class="keyword">return</span> self;
+    };
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-54">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-54">#</a>
+        </div>
+      <p>Bind all of an object's methods to that object. Useful for ensuring that
+all callbacks defined on an object belong to it.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.bindAll = <span class="keyword">function</span>(obj) {
+    <span class="keyword">var</span> funcs = slice.call(arguments, <span class="number">1</span>);
+    <span class="keyword">if</span> (funcs.length === <span class="number">0</span>) funcs = _.functions(obj);
+    each(funcs, <span class="keyword">function</span>(f) { obj[f] = _.bind(obj[f], obj); });
+    <span class="keyword">return</span> obj;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-55">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-55">#</a>
+        </div>
+      <p>Memoize an expensive function by storing its results.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.memoize = <span class="keyword">function</span>(func, hasher) {
+    <span class="keyword">var</span> memo = {};
+    hasher || (hasher = _.identity);
+    <span class="keyword">return</span> <span class="keyword">function</span>() {
+      <span class="keyword">var</span> key = hasher.apply(<span class="keyword">this</span>, arguments);
+      <span class="keyword">return</span> _.has(memo, key) ? memo[key] : (memo[key] = func.apply(<span class="keyword">this</span>, arguments));
+    };
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-56">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-56">#</a>
+        </div>
+      <p>Delays a function for the given number of milliseconds, and then calls
+it with the arguments supplied.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.delay = <span class="keyword">function</span>(func, wait) {
+    <span class="keyword">var</span> args = slice.call(arguments, <span class="number">2</span>);
+    <span class="keyword">return</span> setTimeout(<span class="keyword">function</span>(){ <span class="keyword">return</span> func.apply(<span class="literal">null</span>, args); }, wait);
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-57">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-57">#</a>
+        </div>
+      <p>Defers a function, scheduling it to run after the current call stack has
+cleared.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.defer = <span class="keyword">function</span>(func) {
+    <span class="keyword">return</span> _.delay.apply(_, [func, <span class="number">1</span>].concat(slice.call(arguments, <span class="number">1</span>)));
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-58">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-58">#</a>
+        </div>
+      <p>Returns a function, that, when invoked, will only be triggered at most once
+during a given window of time.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.throttle = <span class="keyword">function</span>(func, wait) {
+    <span class="keyword">var</span> context, args, timeout, result;
+    <span class="keyword">var</span> previous = <span class="number">0</span>;
+    <span class="keyword">var</span> later = <span class="keyword">function</span>() {
+      previous = <span class="keyword">new</span> Date;
+      timeout = <span class="literal">null</span>;
+      result = func.apply(context, args);
+    };
+    <span class="keyword">return</span> <span class="keyword">function</span>() {
+      <span class="keyword">var</span> now = <span class="keyword">new</span> Date;
+      <span class="keyword">var</span> remaining = wait - (now - previous);
+      context = <span class="keyword">this</span>;
+      args = arguments;
+      <span class="keyword">if</span> (remaining &lt;= <span class="number">0</span>) {
+        clearTimeout(timeout);
+        timeout = <span class="literal">null</span>;
+        previous = now;
+        result = func.apply(context, args);
+      } <span class="keyword">else</span> <span class="keyword">if</span> (!timeout) {
+        timeout = setTimeout(later, remaining);
+      }
+      <span class="keyword">return</span> result;
+    };
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-59">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-59">#</a>
+        </div>
+      <p>Returns a function, that, as long as it continues to be invoked, will not
+be triggered. The function will be called after it stops being called for
+N milliseconds. If <code>immediate</code> is passed, trigger the function on the
+leading edge, instead of the trailing.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.debounce = <span class="keyword">function</span>(func, wait, immediate) {
+    <span class="keyword">var</span> timeout, result;
+    <span class="keyword">return</span> <span class="keyword">function</span>() {
+      <span class="keyword">var</span> context = <span class="keyword">this</span>, args = arguments;
+      <span class="keyword">var</span> later = <span class="keyword">function</span>() {
+        timeout = <span class="literal">null</span>;
+        <span class="keyword">if</span> (!immediate) result = func.apply(context, args);
+      };
+      <span class="keyword">var</span> callNow = immediate &amp;&amp; !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      <span class="keyword">if</span> (callNow) result = func.apply(context, args);
+      <span class="keyword">return</span> result;
+    };
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-60">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-60">#</a>
+        </div>
+      <p>Returns a function that will be executed at most one time, no matter how
+often you call it. Useful for lazy initialization.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.once = <span class="keyword">function</span>(func) {
+    <span class="keyword">var</span> ran = <span class="literal">false</span>, memo;
+    <span class="keyword">return</span> <span class="keyword">function</span>() {
+      <span class="keyword">if</span> (ran) <span class="keyword">return</span> memo;
+      ran = <span class="literal">true</span>;
+      memo = func.apply(<span class="keyword">this</span>, arguments);
+      func = <span class="literal">null</span>;
+      <span class="keyword">return</span> memo;
+    };
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-61">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-61">#</a>
+        </div>
+      <p>Returns the first function passed as an argument to the second,
+allowing you to adjust arguments, run code before and after, and
+conditionally execute the original function.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.wrap = <span class="keyword">function</span>(func, wrapper) {
+    <span class="keyword">return</span> <span class="keyword">function</span>() {
+      <span class="keyword">var</span> args = [func];
+      push.apply(args, arguments);
+      <span class="keyword">return</span> wrapper.apply(<span class="keyword">this</span>, args);
+    };
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-62">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-62">#</a>
+        </div>
+      <p>Returns a function that is the composition of a list of functions, each
+consuming the return value of the function that follows.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.compose = <span class="keyword">function</span>() {
+    <span class="keyword">var</span> funcs = arguments;
+    <span class="keyword">return</span> <span class="keyword">function</span>() {
+      <span class="keyword">var</span> args = arguments;
+      <span class="keyword">for</span> (<span class="keyword">var</span> i = funcs.length - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) {
+        args = [funcs[i].apply(<span class="keyword">this</span>, args)];
+      }
+      <span class="keyword">return</span> args[<span class="number">0</span>];
+    };
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-63">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-63">#</a>
+        </div>
+      <p>Returns a function that will only be executed after being called N times.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.after = <span class="keyword">function</span>(times, func) {
+    <span class="keyword">if</span> (times &lt;= <span class="number">0</span>) <span class="keyword">return</span> func();
+    <span class="keyword">return</span> <span class="keyword">function</span>() {
+      <span class="keyword">if</span> (--times &lt; <span class="number">1</span>) {
+        <span class="keyword">return</span> func.apply(<span class="keyword">this</span>, arguments);
+      }
+    };
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-64">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-64">#</a>
+        </div>
+      <h2 id="objectfunctions">Object Functions</h2>
+
+<p>Retrieve the names of an object's properties.
+Delegates to <strong>ECMAScript 5</strong>'s native <code>Object.keys</code></p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.keys = nativeKeys || <span class="keyword">function</span>(obj) {
+    <span class="keyword">if</span> (obj !== Object(obj)) <span class="keyword">throw</span> <span class="keyword">new</span> TypeError(<span class="string">'Invalid object'</span>);
+    <span class="keyword">var</span> keys = [];
+    <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> obj) <span class="keyword">if</span> (_.has(obj, key)) keys[keys.length] = key;
+    <span class="keyword">return</span> keys;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-65">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-65">#</a>
+        </div>
+      <p>Retrieve the values of an object's properties.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.values = <span class="keyword">function</span>(obj) {
+    <span class="keyword">var</span> values = [];
+    <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> obj) <span class="keyword">if</span> (_.has(obj, key)) values.push(obj[key]);
+    <span class="keyword">return</span> values;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-66">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-66">#</a>
+        </div>
+      <p>Convert an object into a list of <code>[key, value]</code> pairs.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.pairs = <span class="keyword">function</span>(obj) {
+    <span class="keyword">var</span> pairs = [];
+    <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> obj) <span class="keyword">if</span> (_.has(obj, key)) pairs.push([key, obj[key]]);
+    <span class="keyword">return</span> pairs;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-67">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-67">#</a>
+        </div>
+      <p>Invert the keys and values of an object. The values must be serializable.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.invert = <span class="keyword">function</span>(obj) {
+    <span class="keyword">var</span> result = {};
+    <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> obj) <span class="keyword">if</span> (_.has(obj, key)) result[obj[key]] = key;
+    <span class="keyword">return</span> result;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-68">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-68">#</a>
+        </div>
+      <p>Return a sorted list of the function names available on the object.
+Aliased as <code>methods</code></p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.functions = _.methods = <span class="keyword">function</span>(obj) {
+    <span class="keyword">var</span> names = [];
+    <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> obj) {
+      <span class="keyword">if</span> (_.isFunction(obj[key])) names.push(key);
+    }
+    <span class="keyword">return</span> names.sort();
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-69">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-69">#</a>
+        </div>
+      <p>Extend a given object with all the properties in passed-in object(s).</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.extend = <span class="keyword">function</span>(obj) {
+    each(slice.call(arguments, <span class="number">1</span>), <span class="keyword">function</span>(source) {
+      <span class="keyword">if</span> (source) {
+        <span class="keyword">for</span> (<span class="keyword">var</span> prop <span class="keyword">in</span> source) {
+          obj[prop] = source[prop];
+        }
+      }
+    });
+    <span class="keyword">return</span> obj;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-70">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-70">#</a>
+        </div>
+      <p>Return a copy of the object only containing the whitelisted properties.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.pick = <span class="keyword">function</span>(obj) {
+    <span class="keyword">var</span> copy = {};
+    <span class="keyword">var</span> keys = concat.apply(ArrayProto, slice.call(arguments, <span class="number">1</span>));
+    each(keys, <span class="keyword">function</span>(key) {
+      <span class="keyword">if</span> (key <span class="keyword">in</span> obj) copy[key] = obj[key];
+    });
+    <span class="keyword">return</span> copy;
+  };
+
+   </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-71">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-71">#</a>
+        </div>
+      <p>Return a copy of the object without the blacklisted properties.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.omit = <span class="keyword">function</span>(obj) {
+    <span class="keyword">var</span> copy = {};
+    <span class="keyword">var</span> keys = concat.apply(ArrayProto, slice.call(arguments, <span class="number">1</span>));
+    <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> obj) {
+      <span class="keyword">if</span> (!_.contains(keys, key)) copy[key] = obj[key];
+    }
+    <span class="keyword">return</span> copy;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-72">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-72">#</a>
+        </div>
+      <p>Fill in a given object with default properties.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.defaults = <span class="keyword">function</span>(obj) {
+    each(slice.call(arguments, <span class="number">1</span>), <span class="keyword">function</span>(source) {
+      <span class="keyword">if</span> (source) {
+        <span class="keyword">for</span> (<span class="keyword">var</span> prop <span class="keyword">in</span> source) {
+          <span class="keyword">if</span> (obj[prop] == <span class="literal">null</span>) obj[prop] = source[prop];
+        }
+      }
+    });
+    <span class="keyword">return</span> obj;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-73">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-73">#</a>
+        </div>
+      <p>Create a (shallow-cloned) duplicate of an object.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.clone = <span class="keyword">function</span>(obj) {
+    <span class="keyword">if</span> (!_.isObject(obj)) <span class="keyword">return</span> obj;
+    <span class="keyword">return</span> _.isArray(obj) ? obj.slice() : _.extend({}, obj);
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-74">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-74">#</a>
+        </div>
+      <p>Invokes interceptor with the obj, and then returns obj.
+The primary purpose of this method is to "tap into" a method chain, in
+order to perform operations on intermediate results within the chain.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.tap = <span class="keyword">function</span>(obj, interceptor) {
+    interceptor(obj);
+    <span class="keyword">return</span> obj;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-75">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-75">#</a>
+        </div>
+      <p>Internal recursive comparison function for <code>isEqual</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> eq = <span class="keyword">function</span>(a, b, aStack, bStack) {
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-76">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-76">#</a>
+        </div>
+      <p>Identical objects are equal. <code>0 === -0</code>, but they aren't identical.
+See the Harmony <code>egal</code> proposal: http://wiki.ecmascript.org/doku.php?id=harmony:egal.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">    <span class="keyword">if</span> (a === b) <span class="keyword">return</span> a !== <span class="number">0</span> || <span class="number">1</span> / a == <span class="number">1</span> / b;
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-77">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-77">#</a>
+        </div>
+      <p>A strict comparison is necessary because <code>null == undefined</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">    <span class="keyword">if</span> (a == <span class="literal">null</span> || b == <span class="literal">null</span>) <span class="keyword">return</span> a === b;
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-78">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-78">#</a>
+        </div>
+      <p>Unwrap any wrapped objects.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">    <span class="keyword">if</span> (a <span class="keyword">instanceof</span> _) a = a._wrapped;
+    <span class="keyword">if</span> (b <span class="keyword">instanceof</span> _) b = b._wrapped;
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-79">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-79">#</a>
+        </div>
+      <p>Compare <code>[[Class]]</code> names.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">    <span class="keyword">var</span> className = toString.call(a);
+    <span class="keyword">if</span> (className != toString.call(b)) <span class="keyword">return</span> <span class="literal">false</span>;
+    <span class="keyword">switch</span> (className) {
+      </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-80">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-80">#</a>
+        </div>
+      <p>Strings, numbers, dates, and booleans are compared by value.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">      <span class="keyword">case</span> <span class="string">'[object String]'</span>:
+        </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-81">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-81">#</a>
+        </div>
+      <p>Primitives and their corresponding object wrappers are equivalent; thus, <code>"5"</code> is
+equivalent to <code>new String("5")</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">        <span class="keyword">return</span> a == String(b);
+      <span class="keyword">case</span> <span class="string">'[object Number]'</span>:
+        </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-82">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-82">#</a>
+        </div>
+      <p><code>NaN</code>s are equivalent, but non-reflexive. An <code>egal</code> comparison is performed for
+other numeric values.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">        <span class="keyword">return</span> a != +a ? b != +b : (a == <span class="number">0</span> ? <span class="number">1</span> / a == <span class="number">1</span> / b : a == +b);
+      <span class="keyword">case</span> <span class="string">'[object Date]'</span>:
+      <span class="keyword">case</span> <span class="string">'[object Boolean]'</span>:
+        </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-83">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-83">#</a>
+        </div>
+      <p>Coerce dates and booleans to numeric primitive values. Dates are compared by their
+millisecond representations. Note that invalid dates with millisecond representations
+of <code>NaN</code> are not equivalent.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">        <span class="keyword">return</span> +a == +b;
+      </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-84">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-84">#</a>
+        </div>
+      <p>RegExps are compared by their source patterns and flags.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">      <span class="keyword">case</span> <span class="string">'[object RegExp]'</span>:
+        <span class="keyword">return</span> a.source == b.source &amp;&amp;
+               a.global == b.global &amp;&amp;
+               a.multiline == b.multiline &amp;&amp;
+               a.ignoreCase == b.ignoreCase;
+    }
+    <span class="keyword">if</span> (<span class="keyword">typeof</span> a != <span class="string">'object'</span> || <span class="keyword">typeof</span> b != <span class="string">'object'</span>) <span class="keyword">return</span> <span class="literal">false</span>;
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-85">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-85">#</a>
+        </div>
+      <p>Assume equality for cyclic structures. The algorithm for detecting cyclic
+structures is adapted from ES 5.1 section 15.12.3, abstract operation <code>JO</code>.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">    <span class="keyword">var</span> length = aStack.length;
+    <span class="keyword">while</span> (length--) {
+      </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-86">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-86">#</a>
+        </div>
+      <p>Linear search. Performance is inversely proportional to the number of
+unique nested structures.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">      <span class="keyword">if</span> (aStack[length] == a) <span class="keyword">return</span> bStack[length] == b;
+    }
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-87">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-87">#</a>
+        </div>
+      <p>Add the first object to the stack of traversed objects.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">    aStack.push(a);
+    bStack.push(b);
+    <span class="keyword">var</span> size = <span class="number">0</span>, result = <span class="literal">true</span>;
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-88">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-88">#</a>
+        </div>
+      <p>Recursively compare objects and arrays.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">    <span class="keyword">if</span> (className == <span class="string">'[object Array]'</span>) {
+      </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-89">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-89">#</a>
+        </div>
+      <p>Compare array lengths to determine if a deep comparison is necessary.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">      size = a.length;
+      result = size == b.length;
+      <span class="keyword">if</span> (result) {
+        </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-90">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-90">#</a>
+        </div>
+      <p>Deep compare the contents, ignoring non-numeric properties.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">        <span class="keyword">while</span> (size--) {
+          <span class="keyword">if</span> (!(result = eq(a[size], b[size], aStack, bStack))) <span class="keyword">break</span>;
+        }
+      }
+    } <span class="keyword">else</span> {
+      </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-91">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-91">#</a>
+        </div>
+      <p>Objects with different constructors are not equivalent, but <code>Object</code>s
+from different frames are.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">      <span class="keyword">var</span> aCtor = a.constructor, bCtor = b.constructor;
+      <span class="keyword">if</span> (aCtor !== bCtor &amp;&amp; !(_.isFunction(aCtor) &amp;&amp; (aCtor <span class="keyword">instanceof</span> aCtor) &amp;&amp;
+                               _.isFunction(bCtor) &amp;&amp; (bCtor <span class="keyword">instanceof</span> bCtor))) {
+        <span class="keyword">return</span> <span class="literal">false</span>;
+      }
+      </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-92">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-92">#</a>
+        </div>
+      <p>Deep compare objects.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">      <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> a) {
+        <span class="keyword">if</span> (_.has(a, key)) {
+          </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-93">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-93">#</a>
+        </div>
+      <p>Count the expected number of properties.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">          size++;
+          </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-94">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-94">#</a>
+        </div>
+      <p>Deep compare each member.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">          <span class="keyword">if</span> (!(result = _.has(b, key) &amp;&amp; eq(a[key], b[key], aStack, bStack))) <span class="keyword">break</span>;
+        }
+      }
+      </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-95">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-95">#</a>
+        </div>
+      <p>Ensure that both objects contain the same number of properties.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">      <span class="keyword">if</span> (result) {
+        <span class="keyword">for</span> (key <span class="keyword">in</span> b) {
+          <span class="keyword">if</span> (_.has(b, key) &amp;&amp; !(size--)) <span class="keyword">break</span>;
+        }
+        result = !size;
+      }
+    }
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-96">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-96">#</a>
+        </div>
+      <p>Remove the first object from the stack of traversed objects.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">    aStack.pop();
+    bStack.pop();
+    <span class="keyword">return</span> result;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-97">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-97">#</a>
+        </div>
+      <p>Perform a deep comparison to check if two objects are equal.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.isEqual = <span class="keyword">function</span>(a, b) {
+    <span class="keyword">return</span> eq(a, b, [], []);
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-98">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-98">#</a>
+        </div>
+      <p>Is a given array, string, or object empty?
+An "empty" object has no enumerable own-properties.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.isEmpty = <span class="keyword">function</span>(obj) {
+    <span class="keyword">if</span> (obj == <span class="literal">null</span>) <span class="keyword">return</span> <span class="literal">true</span>;
+    <span class="keyword">if</span> (_.isArray(obj) || _.isString(obj)) <span class="keyword">return</span> obj.length === <span class="number">0</span>;
+    <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> obj) <span class="keyword">if</span> (_.has(obj, key)) <span class="keyword">return</span> <span class="literal">false</span>;
+    <span class="keyword">return</span> <span class="literal">true</span>;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-99">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-99">#</a>
+        </div>
+      <p>Is a given value a DOM element?</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.isElement = <span class="keyword">function</span>(obj) {
+    <span class="keyword">return</span> !!(obj &amp;&amp; obj.nodeType === <span class="number">1</span>);
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-100">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-100">#</a>
+        </div>
+      <p>Is a given value an array?
+Delegates to ECMA5's native Array.isArray</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.isArray = nativeIsArray || <span class="keyword">function</span>(obj) {
+    <span class="keyword">return</span> toString.call(obj) == <span class="string">'[object Array]'</span>;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-101">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-101">#</a>
+        </div>
+      <p>Is a given variable an object?</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.isObject = <span class="keyword">function</span>(obj) {
+    <span class="keyword">return</span> obj === Object(obj);
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-102">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-102">#</a>
+        </div>
+      <p>Add some isType methods: isArguments, isFunction, isString, isNumber, isDate, isRegExp.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  each([<span class="string">'Arguments'</span>, <span class="string">'Function'</span>, <span class="string">'String'</span>, <span class="string">'Number'</span>, <span class="string">'Date'</span>, <span class="string">'RegExp'</span>], <span class="keyword">function</span>(name) {
+    _[<span class="string">'is'</span> + name] = <span class="keyword">function</span>(obj) {
+      <span class="keyword">return</span> toString.call(obj) == <span class="string">'[object '</span> + name + <span class="string">']'</span>;
+    };
+  });
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-103">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-103">#</a>
+        </div>
+      <p>Define a fallback version of the method in browsers (ahem, IE), where
+there isn't any inspectable "Arguments" type.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">if</span> (!_.isArguments(arguments)) {
+    _.isArguments = <span class="keyword">function</span>(obj) {
+      <span class="keyword">return</span> !!(obj &amp;&amp; _.has(obj, <span class="string">'callee'</span>));
+    };
+  }
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-104">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-104">#</a>
+        </div>
+      <p>Optimize <code>isFunction</code> if appropriate.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">if</span> (<span class="keyword">typeof</span> (<span class="regexp">/./</span>) !== <span class="string">'function'</span>) {
+    _.isFunction = <span class="keyword">function</span>(obj) {
+      <span class="keyword">return</span> <span class="keyword">typeof</span> obj === <span class="string">'function'</span>;
+    };
+  }
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-105">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-105">#</a>
+        </div>
+      <p>Is a given object a finite number?</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.isFinite = <span class="keyword">function</span>(obj) {
+    <span class="keyword">return</span> isFinite(obj) &amp;&amp; !isNaN(parseFloat(obj));
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-106">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-106">#</a>
+        </div>
+      <p>Is the given value <code>NaN</code>? (NaN is the only number which does not equal itself).</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.isNaN = <span class="keyword">function</span>(obj) {
+    <span class="keyword">return</span> _.isNumber(obj) &amp;&amp; obj != +obj;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-107">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-107">#</a>
+        </div>
+      <p>Is a given value a boolean?</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.isBoolean = <span class="keyword">function</span>(obj) {
+    <span class="keyword">return</span> obj === <span class="literal">true</span> || obj === <span class="literal">false</span> || toString.call(obj) == <span class="string">'[object Boolean]'</span>;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-108">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-108">#</a>
+        </div>
+      <p>Is a given value equal to null?</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.isNull = <span class="keyword">function</span>(obj) {
+    <span class="keyword">return</span> obj === <span class="literal">null</span>;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-109">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-109">#</a>
+        </div>
+      <p>Is a given variable undefined?</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.isUndefined = <span class="keyword">function</span>(obj) {
+    <span class="keyword">return</span> obj === <span class="keyword">void</span> <span class="number">0</span>;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-110">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-110">#</a>
+        </div>
+      <p>Shortcut function for checking if an object has a given property directly
+on itself (in other words, not on a prototype).</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.has = <span class="keyword">function</span>(obj, key) {
+    <span class="keyword">return</span> hasOwnProperty.call(obj, key);
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-111">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-111">#</a>
+        </div>
+      <h2 id="utilityfunctions">Utility Functions</h2>
+
+<p>Run Underscore.js in <em>noConflict</em> mode, returning the <code>_</code> variable to its
+previous owner. Returns a reference to the Underscore object.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.noConflict = <span class="keyword">function</span>() {
+    root._ = previousUnderscore;
+    <span class="keyword">return</span> <span class="keyword">this</span>;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-112">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-112">#</a>
+        </div>
+      <p>Keep the identity function around for default iterators.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.identity = <span class="keyword">function</span>(value) {
+    <span class="keyword">return</span> value;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-113">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-113">#</a>
+        </div>
+      <p>Run a function <strong>n</strong> times.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.times = <span class="keyword">function</span>(n, iterator, context) {
+    <span class="keyword">var</span> accum = Array(n);
+    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; n; i++) accum[i] = iterator.call(context, i);
+    <span class="keyword">return</span> accum;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-114">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-114">#</a>
+        </div>
+      <p>Return a random integer between min and max (inclusive).</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.random = <span class="keyword">function</span>(min, max) {
+    <span class="keyword">if</span> (max == <span class="literal">null</span>) {
+      max = min;
+      min = <span class="number">0</span>;
+    }
+    <span class="keyword">return</span> min + (<span class="number">0</span> | Math.random() * (max - min + <span class="number">1</span>));
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-115">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-115">#</a>
+        </div>
+      <p>List of HTML entities for escaping.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> entityMap = {
+    escape: {
+      <span class="string">'&amp;'</span>: <span class="string">'&amp;amp;'</span>,
+      <span class="string">'&lt;'</span>: <span class="string">'&amp;lt;'</span>,
+      <span class="string">'&gt;'</span>: <span class="string">'&amp;gt;'</span>,
+      <span class="string">'"'</span>: <span class="string">'&amp;quot;'</span>,
+      <span class="string">"'"</span>: <span class="string">'&amp;#x27;'</span>,
+      <span class="string">'/'</span>: <span class="string">'&amp;#x2F;'</span>
+    }
+  };
+  entityMap.unescape = _.invert(entityMap.escape);
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-116">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-116">#</a>
+        </div>
+      <p>Regexes containing the keys and values listed immediately above.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> entityRegexes = {
+    escape:   <span class="keyword">new</span> RegExp(<span class="string">'['</span> + _.keys(entityMap.escape).join(<span class="string">''</span>) + <span class="string">']'</span>, <span class="string">'g'</span>),
+    unescape: <span class="keyword">new</span> RegExp(<span class="string">'('</span> + _.keys(entityMap.unescape).join(<span class="string">'|'</span>) + <span class="string">')'</span>, <span class="string">'g'</span>)
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-117">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-117">#</a>
+        </div>
+      <p>Functions for escaping and unescaping strings to/from HTML interpolation.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.each([<span class="string">'escape'</span>, <span class="string">'unescape'</span>], <span class="keyword">function</span>(method) {
+    _[method] = <span class="keyword">function</span>(string) {
+      <span class="keyword">if</span> (string == <span class="literal">null</span>) <span class="keyword">return</span> <span class="string">''</span>;
+      <span class="keyword">return</span> (<span class="string">''</span> + string).replace(entityRegexes[method], <span class="keyword">function</span>(match) {
+        <span class="keyword">return</span> entityMap[method][match];
+      });
+    };
+  });
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-118">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-118">#</a>
+        </div>
+      <p>If the value of the named property is a function then invoke it;
+otherwise, return it.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.result = <span class="keyword">function</span>(object, property) {
+    <span class="keyword">if</span> (object == <span class="literal">null</span>) <span class="keyword">return</span> <span class="literal">null</span>;
+    <span class="keyword">var</span> value = object[property];
+    <span class="keyword">return</span> _.isFunction(value) ? value.call(object) : value;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-119">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-119">#</a>
+        </div>
+      <p>Add your own custom functions to the Underscore object.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.mixin = <span class="keyword">function</span>(obj) {
+    each(_.functions(obj), <span class="keyword">function</span>(name){
+      <span class="keyword">var</span> func = _[name] = obj[name];
+      _.prototype[name] = <span class="keyword">function</span>() {
+        <span class="keyword">var</span> args = [<span class="keyword">this</span>._wrapped];
+        push.apply(args, arguments);
+        <span class="keyword">return</span> result.call(<span class="keyword">this</span>, func.apply(_, args));
+      };
+    });
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-120">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-120">#</a>
+        </div>
+      <p>Generate a unique integer id (unique within the entire client session).
+Useful for temporary DOM ids.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> idCounter = <span class="number">0</span>;
+  _.uniqueId = <span class="keyword">function</span>(prefix) {
+    <span class="keyword">var</span> id = <span class="string">''</span> + (++idCounter);
+    <span class="keyword">return</span> prefix ? prefix + id : id;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-121">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-121">#</a>
+        </div>
+      <p>By default, Underscore uses ERB-style template delimiters, change the
+following template settings to use alternative delimiters.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.templateSettings = {
+    evaluate    : <span class="regexp">/&lt;%([\s\S]+?)%&gt;/g</span>,
+    interpolate : <span class="regexp">/&lt;%=([\s\S]+?)%&gt;/g</span>,
+    escape      : <span class="regexp">/&lt;%-([\s\S]+?)%&gt;/g</span>
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-122">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-122">#</a>
+        </div>
+      <p>When customizing <code>templateSettings</code>, if you don't want to define an
+interpolation, evaluation or escaping regex, we need one that is
+guaranteed not to match.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> noMatch = <span class="regexp">/(.)^/</span>;
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-123">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-123">#</a>
+        </div>
+      <p>Certain characters need to be escaped so that they can be put into a
+string literal.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> escapes = {
+    <span class="string">"'"</span>:      <span class="string">"'"</span>,
+    <span class="string">'\\'</span>:     <span class="string">'\\'</span>,
+    <span class="string">'\r'</span>:     <span class="string">'r'</span>,
+    <span class="string">'\n'</span>:     <span class="string">'n'</span>,
+    <span class="string">'\t'</span>:     <span class="string">'t'</span>,
+    <span class="string">'\u2028'</span>: <span class="string">'u2028'</span>,
+    <span class="string">'\u2029'</span>: <span class="string">'u2029'</span>
+  };
+
+  <span class="keyword">var</span> escaper = <span class="regexp">/\\|'|\r|\n|\t|\u2028|\u2029/g</span>;
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-124">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-124">#</a>
+        </div>
+      <p>JavaScript micro-templating, similar to John Resig's implementation.
+Underscore templating handles arbitrary delimiters, preserves whitespace,
+and correctly escapes quotes within interpolated code.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.template = <span class="keyword">function</span>(text, data, settings) {
+    <span class="keyword">var</span> render;
+    settings = _.defaults({}, settings, _.templateSettings);
+
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-125">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-125">#</a>
+        </div>
+      <p>Combine delimiters into one regular expression via alternation.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">    <span class="keyword">var</span> matcher = <span class="keyword">new</span> RegExp([
+      (settings.escape || noMatch).source,
+      (settings.interpolate || noMatch).source,
+      (settings.evaluate || noMatch).source
+    ].join(<span class="string">'|'</span>) + <span class="string">'|$'</span>, <span class="string">'g'</span>);
+
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-126">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-126">#</a>
+        </div>
+      <p>Compile the template source, escaping string literals appropriately.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">    <span class="keyword">var</span> index = <span class="number">0</span>;
+    <span class="keyword">var</span> source = <span class="string">"__p+='"</span>;
+    text.replace(matcher, <span class="keyword">function</span>(match, escape, interpolate, evaluate, offset) {
+      source += text.slice(index, offset)
+        .replace(escaper, <span class="keyword">function</span>(match) { <span class="keyword">return</span> <span class="string">'\\'</span> + escapes[match]; });
+
+      <span class="keyword">if</span> (escape) {
+        source += <span class="string">"'+\n((__t=("</span> + escape + <span class="string">"))==null?'':_.escape(__t))+\n'"</span>;
+      }
+      <span class="keyword">if</span> (interpolate) {
+        source += <span class="string">"'+\n((__t=("</span> + interpolate + <span class="string">"))==null?'':__t)+\n'"</span>;
+      }
+      <span class="keyword">if</span> (evaluate) {
+        source += <span class="string">"';\n"</span> + evaluate + <span class="string">"\n__p+='"</span>;
+      }
+      index = offset + match.length;
+      <span class="keyword">return</span> match;
+    });
+    source += <span class="string">"';\n"</span>;
+
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-127">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-127">#</a>
+        </div>
+      <p>If a variable is not specified, place data values in local scope.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">    <span class="keyword">if</span> (!settings.variable) source = <span class="string">'with(obj||{}){\n'</span> + source + <span class="string">'}\n'</span>;
+
+    source = <span class="string">"var __t,__p='',__j=Array.prototype.join,"</span> +
+      <span class="string">"print=function(){__p+=__j.call(arguments,'');};\n"</span> +
+      source + <span class="string">"return __p;\n"</span>;
+
+    <span class="keyword">try</span> {
+      render = <span class="keyword">new</span> Function(settings.variable || <span class="string">'obj'</span>, <span class="string">'_'</span>, source);
+    } <span class="keyword">catch</span> (e) {
+      e.source = source;
+      <span class="keyword">throw</span> e;
+    }
+
+    <span class="keyword">if</span> (data) <span class="keyword">return</span> render(data, _);
+    <span class="keyword">var</span> template = <span class="keyword">function</span>(data) {
+      <span class="keyword">return</span> render.call(<span class="keyword">this</span>, data, _);
+    };
+
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-128">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-128">#</a>
+        </div>
+      <p>Provide the compiled function source as a convenience for precompilation.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">    template.source = <span class="string">'function('</span> + (settings.variable || <span class="string">'obj'</span>) + <span class="string">'){\n'</span> + source + <span class="string">'}'</span>;
+
+    <span class="keyword">return</span> template;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-129">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-129">#</a>
+        </div>
+      <p>Add a "chain" function, which will delegate to the wrapper.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.chain = <span class="keyword">function</span>(obj) {
+    <span class="keyword">return</span> _(obj).chain();
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-130">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-130">#</a>
+        </div>
+      <h2 id="oop">OOP</h2>
+
+<p>If Underscore is called as a function, it returns a wrapped object that
+can be used OO-style. This wrapper holds altered versions of all the
+underscore functions. Wrapped objects may be chained.
+Helper function to continue chaining intermediate results.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  <span class="keyword">var</span> result = <span class="keyword">function</span>(obj) {
+    <span class="keyword">return</span> <span class="keyword">this</span>._chain ? _(obj).chain() : obj;
+  };
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-131">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-131">#</a>
+        </div>
+      <p>Add all of the Underscore functions to the wrapper object.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  _.mixin(_);
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-132">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-132">#</a>
+        </div>
+      <p>Add all mutator Array functions to the wrapper.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  each([<span class="string">'pop'</span>, <span class="string">'push'</span>, <span class="string">'reverse'</span>, <span class="string">'shift'</span>, <span class="string">'sort'</span>, <span class="string">'splice'</span>, <span class="string">'unshift'</span>], <span class="keyword">function</span>(name) {
+    <span class="keyword">var</span> method = ArrayProto[name];
+    _.prototype[name] = <span class="keyword">function</span>() {
+      <span class="keyword">var</span> obj = <span class="keyword">this</span>._wrapped;
+      method.apply(obj, arguments);
+      <span class="keyword">if</span> ((name == <span class="string">'shift'</span> || name == <span class="string">'splice'</span>) &amp;&amp; obj.length === <span class="number">0</span>) <span class="keyword">delete</span> obj[<span class="number">0</span>];
+      <span class="keyword">return</span> result.call(<span class="keyword">this</span>, obj);
+    };
+  });
+
+  </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-133">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-133">#</a>
+        </div>
+      <p>Add all accessor Array functions to the wrapper.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">  each([<span class="string">'concat'</span>, <span class="string">'join'</span>, <span class="string">'slice'</span>], <span class="keyword">function</span>(name) {
+    <span class="keyword">var</span> method = ArrayProto[name];
+    _.prototype[name] = <span class="keyword">function</span>() {
+      <span class="keyword">return</span> result.call(<span class="keyword">this</span>, method.apply(<span class="keyword">this</span>._wrapped, arguments));
+    };
+  });
+
+  _.extend(_.prototype, {
+
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-134">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-134">#</a>
+        </div>
+      <p>Start chaining a wrapped Underscore object.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">    chain: <span class="keyword">function</span>() {
+      <span class="keyword">this</span>._chain = <span class="literal">true</span>;
+      <span class="keyword">return</span> <span class="keyword">this</span>;
+    },
+
+    </code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-135">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-135">#</a>
+        </div>
+      <p>Extracts the result from a wrapped and chained object.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">    value: <span class="keyword">function</span>() {
+      <span class="keyword">return</span> <span class="keyword">this</span>._wrapped;
+    }
+
+  });
+
+}).call(<span class="keyword">this</span>);
+</code></pre>
+      </td>
+    </tr>
+    
+  </table>
+</div>
+</body>
+</html>
+
+
+

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>batch.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../docco.css" />
+</head>
+<body>
+<div id="container">
+  <table cellspacing="0" cellpadding="0">
+    <thead>
+    <tr>
+      <th class="docs">
+        
+        <h1><a href="../index.html" title="Back to index">&larr;</a>&nbsp;&nbsp;batch.js</h1>
+        
+      </th>
+      <th class="code"></th>
+    </tr>
+    </thead>
+    <tbody>
+    
+    
+    <tr id="section-1">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-1">#</a>
+        </div>
+      <p>configs it is <code>array</code> of objects, each object should has 3 property:</p>
+
+<pre><code class="javascript">{
+    path: <span class="string">'path to source root'</span>,
+    config: [], <span class="comment">//language config for docco singe (array of language configs)</span>
+    filters: [] <span class="comment">//array of filters, each it is a regex</span>
+}
+</code></pre>
+      </td>
+      <td class="code">
+      <pre><code class="javascript"><span class="keyword">var</span> fs = require(<span class="string">'fs'</span>),
+		path = require(<span class="string">'path'</span>),
+		walk = require(<span class="string">'walk'</span>),
+		_ = require(<span class="string">'lodash'</span>),
+		mkdirp = require(<span class="string">'mkdirp'</span>)
+
+<span class="keyword">var</span> traverse = <span class="keyword">function</span>(firstEntry, filters, onFile, onEnd) {
+	<span class="keyword">var</span> isGoodEntry = <span class="keyword">function</span>(entry) {
+		<span class="keyword">return</span> filters &amp;&amp; filters.every(<span class="keyword">function</span>(filter) {
+			<span class="keyword">return</span> !filter.test(entry)
+		})
+	}
+	fs.stat(firstEntry, <span class="keyword">function</span>(err, stat) {
+		<span class="keyword">if</span>(err) <span class="keyword">throw</span> err
+
+		<span class="keyword">if</span>(stat.isDirectory()) {
+			<span class="keyword">var</span> walker  = walk.walk(firstEntry, { followLinks: <span class="literal">false</span> });
+
+			walker.on(<span class="string">'file'</span>, <span class="keyword">function</span>(root, stat, next) {
+				<span class="keyword">var</span> entry = path.join(root, stat.name)
+				<span class="keyword">if</span>(isGoodEntry(entry)) onFile(entry)
+				next()
+			})
+
+			walker.on(<span class="string">'end'</span>, <span class="keyword">function</span>() {
+				onEnd()
+			})
+		} <span class="keyword">else</span> <span class="keyword">if</span>(stat.isFile()) {
+			<span class="keyword">if</span>(isGoodEntry(firstEntry)) onFile(firstEntry)
+			onEnd()
+		}
+	})
+	
+}
+
+<span class="keyword">var</span> docco = require(<span class="string">'./single'</span>)
+
+
+
+<span class="keyword">var</span> doccoBatch = <span class="keyword">function</span>(configs, done, options) {
+	<span class="keyword">var</span> numberOfRoots = configs.length
+
+	options = _.extend({
+		templatePathIndex: (__dirname + <span class="string">"/templates/index.file.jst"</span>),
+		outputPath: <span class="string">"./docco"</span>
+	}, options)
+
+	<span class="keyword">var</span> processEntry = <span class="keyword">function</span>(config, entry) {
+		entries.push(entry)
+
+		<span class="keyword">var</span> htmlOutputPath = path.join(options.outputPath, entry + <span class="string">".html"</span>)
+		mkdirp(path.dirname(htmlOutputPath), <span class="function"><span class="keyword">function</span> <span class="params">(err)</span> {</span>
+			<span class="keyword">if</span>(err) {
+				console.log(<span class="string">"Error, while creating dirs "</span>)
+				<span class="keyword">throw</span> err
+			}
+			<span class="keyword">new</span> docco(config.config).processFile(entry, <span class="keyword">function</span>() {
+			},
+			{
+				outputPath: path.dirname(htmlOutputPath),
+				rootDir: path.relative(path.dirname(htmlOutputPath), options.outputPath)
+			})
+		})
+	}
+
+	<span class="keyword">var</span> entries = []
+
+	configs.forEach(<span class="keyword">function</span>(config) {
+
+		traverse(
+			config.path, 
+			config.filters, 
+			<span class="keyword">function</span>(entry) {
+				processEntry(config, entry)
+			},
+			<span class="keyword">function</span>() {
+				<span class="keyword">if</span>(--numberOfRoots === <span class="number">0</span>) {
+					
+					fs.readFile(options.templatePathIndex, <span class="string">'utf8'</span>, <span class="keyword">function</span>(err, tpl) {
+						<span class="keyword">if</span>(err) {
+							console.log(<span class="string">"Could not read template file: "</span> + templatePathIndex)
+							<span class="keyword">throw</span> err
+						}
+
+						<span class="keyword">var</span> compiledTemplate = _.template(tpl)
+
+						<span class="keyword">var</span> dirs = _.chain(entries)
+							.groupBy(<span class="keyword">function</span>(entry) {
+								<span class="keyword">return</span> path.dirname(entry)
+							}).map(<span class="keyword">function</span>(files, dir) {
+								<span class="keyword">return</span> {
+									name: dir,
+									files: files
+								}
+							}).sortBy(<span class="keyword">function</span>(dir) {
+								<span class="keyword">return</span> dir.name
+							}).value()
+
+						fs.writeFile(path.join(options.outputPath, <span class="string">"index.html"</span>), 
+			  			compiledTemplate({
+			  				title: options.title,
+			  				dirs: dirs
+			  			}), 
+			  			<span class="keyword">function</span>(err) {
+			  				<span class="keyword">if</span> (err) <span class="keyword">throw</span> err
+			  				done()
+			  			}
+			  		)
+					})
+				}
+			})
+	})
+}
+
+module.exports.traverse = traverse
+module.exports.doccoBatch = doccoBatch</code></pre>
+      </td>
+    </tr>
+    
+  </table>
+</div>
+</body>
+</html>
+
+
+
