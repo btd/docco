@@ -1,12 +1,7 @@
 [
 {
-	"lang": "css",
-	"comments": [["/*!", "*/"]],
-	"files": ["\\.css$"] 
-},
-{
 	"lang": "javascript",
-	"comments": [["/*!", "*/"], ["//", "\n"]],
+	"comments": [["/*!", "*/"], ["// ", "\n"]],
 	"files": ["\\.js$"] 
 },
 {

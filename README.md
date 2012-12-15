@@ -6,6 +6,8 @@ It is a rewriten from scratch original docco generator, why i decide to rewrite 
 * Depends only from node and strong libraries, no process.exec
 * Support any language and any comments styles - multilines, onelines - just fill config file and point generator on it
 
+You can see [examples](http://btd.github.com/docco/examples/index.html) of project that already used docco.
+
 ## Examle usage
 
 Show help:
