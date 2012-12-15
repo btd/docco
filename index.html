@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=640" />
+
+    <link rel="stylesheet" href="stylesheets/core.css" media="screen"/>
+    <link rel="stylesheet" href="stylesheets/mobile.css" media="handheld, only screen and (max-device-width:640px)"/>
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+
+    <script type="text/javascript" src="javascripts/modernizr.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="javascripts/headsmart.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#main_content').headsmart()
+      })
+    </script>
+    <title>Docco by btd</title>
+  </head>
+
+  <body>
+    <a id="forkme_banner" href="https://github.com/btd/docco">View on GitHub</a>
+    <div class="shell">
+
+      <header>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <h1>Docco</h1>
+            <h2>Most advanced fork of original docco - documentaion generator</h2>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+      </header>
+
+      <section id="downloads">
+        <span class="inner">
+          <a href="https://github.com/btd/docco/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/btd/docco/tarball/master" class="tgz"><em>download</em> .TGZ</a>
+        </span>
+      </section>
+
+
+      <span class="banner-fix"></span>
+
+
+      <section id="main_content">
+        <h1>Docco - docco documentation generator</h1>
+
+<p>It is a rewriten from scratch original docco generator, why i decide to rewrite it:</p>
+
+<ul>
+<li>Support of directories</li>
+<li>Depends only from node and strong libraries, no process.exec</li>
+<li>Support any language and any comments styles - multilines, onelines - just fill config file and point generator on it</li>
+</ul><h2>Examle usage</h2>
+
+<p>Show help:</p>
+
+<pre><code>docco --help
+</code></pre>
+
+<p>Process one single file:</p>
+
+<pre><code>docco file.js
+</code></pre>
+
+<p>Will be created file in current directory with name file.js.html and docco.css. It is all. To specify output directory use <code>-o</code> option (strongly recommended for batch processing).</p>
+
+<p>By default it uses C-style comments <code>/*! comment */</code> and <code>// ... \n</code>. So i am sure you want to use another type of comments - fill language configuration file and specify it with <code>-l</code> option.</p>
+
+<p>For example i have such configuration file: </p>
+
+<div class="highlight"><pre><span class="p">[</span>
+<span class="p">{</span>
+    <span class="nt">"lang"</span><span class="p">:</span> <span class="s2">"css"</span><span class="p">,</span>
+    <span class="nt">"comments"</span><span class="p">:</span> <span class="p">[[</span><span class="s2">"/*!"</span><span class="p">,</span> <span class="s2">"*/"</span><span class="p">]],</span>
+    <span class="nt">"files"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"\\.css$"</span><span class="p">]</span> 
+<span class="p">},</span>
+<span class="p">{</span>
+    <span class="nt">"lang"</span><span class="p">:</span> <span class="s2">"javascript"</span><span class="p">,</span>
+    <span class="nt">"comments"</span><span class="p">:</span> <span class="p">[[</span><span class="s2">"/*!"</span><span class="p">,</span> <span class="s2">"*/"</span><span class="p">],</span> <span class="p">[</span><span class="s2">"//"</span><span class="p">,</span> <span class="s2">"\n"</span><span class="p">]],</span>
+    <span class="nt">"files"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"\\.js$"</span><span class="p">]</span> 
+<span class="p">},</span>
+<span class="p">{</span>
+    <span class="nt">"comments"</span><span class="p">:</span> <span class="p">[[</span><span class="s2">"/*!"</span><span class="p">,</span> <span class="s2">"*/"</span><span class="p">],</span> <span class="p">[</span><span class="s2">"//"</span><span class="p">,</span> <span class="s2">"\n"</span><span class="p">]],</span>
+    <span class="nt">"files"</span><span class="p">:</span> <span class="p">[</span><span class="s2">".*"</span><span class="p">]</span> 
+<span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+
+<p>It is array of objects. Each object should has 3 property: <code>lang</code> - it is <code>highlight.js</code> language for highlight, you can skip this argument and in this case will be used best matched, <code>comments</code> - it is obviously array or comments, each it is array with start and end, <code>files</code> - array of file patterns for this object configuration.</p>
+
+<p>Example usage:</p>
+
+<pre><code>docco -l ./resources/languages.example.json ./lib/batch.js
+</code></pre>
+
+<h2>Batch processing</h2>
+
+<p>I strongly recommend add <code>-o</code> option for batch processing!!!</p>
+
+<p>To unable batch processing you can do one of the following things:</p>
+
+<ul>
+<li>Specify more then one file for processing:</li>
+</ul><pre><code>docco -l ./resources/languages.example.json -o ./docs ./lib/batch.js ./lib/single.js
+</code></pre>
+
+<ul>
+<li><p>Specify directory or set of directories or files (the same as above but mixed).</p></li>
+<li><p>Specify option <code>-b</code></p></li>
+<li><p>Specify option <code>--batch-config &lt;path to batch config&gt;</code></p></li>
+</ul><p>First 3 cases uses default filters for directories - skip files which starts from <code>.</code>. Last case used when you want to specify your own filters.</p>
+
+<p>Example of batch config:</p>
+
+<div class="highlight"><pre><span class="p">[</span>
+<span class="p">{</span>
+    <span class="nt">"path"</span><span class="p">:</span> <span class="s2">"./lib"</span><span class="p">,</span>
+    <span class="nt">"config"</span><span class="p">:</span> <span class="p">{</span> <span class="p">},</span>
+    <span class="nt">"filters"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"^\.[^\/].*"</span><span class="p">,</span> <span class="s2">"\/\.[^\/]"</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+
+<p>So it is also array (you can add any numbers of entryes) with objects: <code>path</code> path to entry (usually directory), <code>config</code> - it is a language configuration for this entry (see example above), <code>filters</code> - it is array of strings, which will be excluded while traversing <code>path</code> location recusivly.</p>
+
+<p>For this package i am generating docs with this command:</p>
+
+<pre><code>docco -o docs -l ./resources/languages.example.json --title "Docco - documentaion generator" ./lib
+</code></pre>
+
+<h2>License</h2>
+
+<p>(The MIT License)</p>
+
+<p>Copyright (c) 2012 Bardadym Denis &lt;<a href="mailto:bardadymchik@gmail.com">bardadymchik@gmail.com</a>&gt;</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+      </section>
+
+      <footer>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <p>this project by <a href="https://github.com/btd">btd</a> can be found on <a href="https://github.com/btd/docco">GitHub</a></p>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+        <p>Generated with <a href="http://pages.github.com">GitHub Pages</a> using Merlot</p>
+        <span class="octocat"></span>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
