@@ -13,7 +13,7 @@ var doccoSingle = require('../lib/single'),
 		doccoBatch = require('../lib/batch').doccoBatch
 
 program
-  .version('0.0.5')
+  .version('0.0.6')
   .usage('[options] <files and/or dirs>')
   .option('--title <title>', 'this will be used for index page title in batch mode', "")
   .option('-l, --lang-config <path>', 'path to your language configuration file, see examples in docs')

@@ -3,7 +3,7 @@
     "docco": "./bin/docco"
   },
   "name": "docco-next",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Fork of docco with a lot of advanced features",
   "repository": "git://github.com/btd/docco.git",
   "keywords": [
