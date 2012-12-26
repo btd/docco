@@ -3,7 +3,7 @@ MOCHA_OPTS=
 REPORTER = spec
 
 doc:
-	./bin/docco -l resources/languages.example.json --title 'New docco' -o ./docs lib
+	./bin/docco -l resources/languages.example.json --title 'Docco - documentaion generator' -o ./docs lib
 
 jshint:
 	./node_modules/.bin/jshint lib

@@ -44,11 +44,11 @@
 <span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"docco-index"</span>&gt;</span>
   <span class="tag">&lt;<span class="title">h1</span>&gt;</span><span class="vbscript">&lt;%= title %&gt;</span><span class="tag">&lt;/<span class="title">h1</span>&gt;</span>
   <span class="tag">&lt;<span class="title">ul</span>&gt;</span>
-  <span class="vbscript">&lt;% _(dirs).<span class="keyword">each</span>(<span class="keyword">function</span>(files, dir) { %&gt;</span>
+  <span class="vbscript">&lt;% _(dirs).<span class="keyword">each</span>(<span class="keyword">function</span>(dir) { %&gt;</span>
     <span class="tag">&lt;<span class="title">li</span>&gt;</span>
-      <span class="tag">&lt;<span class="title">p</span>&gt;</span><span class="vbscript">&lt;%= dir %&gt;</span><span class="tag">&lt;/<span class="title">p</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">p</span>&gt;</span><span class="vbscript">&lt;%= dir.name %&gt;</span><span class="tag">&lt;/<span class="title">p</span>&gt;</span>
       <span class="tag">&lt;<span class="title">ul</span>&gt;</span>
-        <span class="vbscript">&lt;% _(files).<span class="keyword">each</span>(<span class="keyword">function</span>(file) { %&gt;</span>
+        <span class="vbscript">&lt;% _(dir.files).<span class="keyword">each</span>(<span class="keyword">function</span>(file) { %&gt;</span>
           <span class="tag">&lt;<span class="title">li</span>&gt;</span><span class="tag">&lt;<span class="title">a</span> <span class="attribute">href</span>=<span class="value">"&lt;%= file %&gt;.html"</span>&gt;</span><span class="vbscript">&lt;%= file %&gt;</span><span class="tag">&lt;/<span class="title">a</span>&gt;</span><span class="tag">&lt;/<span class="title">li</span>&gt;</span>
         <span class="vbscript">&lt;% }) %&gt;</span>
       <span class="tag">&lt;/<span class="title">ul</span>&gt;</span>

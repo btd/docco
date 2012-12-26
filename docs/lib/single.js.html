@@ -30,13 +30,12 @@
       
       </td>
       <td class="code">
-      <pre><code class="javascript">
-<span class="keyword">var</span> fs = require(<span class="string">"fs"</span>),
-		path = require(<span class="string">"path"</span>),
-		_ = require(<span class="string">"lodash"</span>)
+      <pre><code class="javascript"><span class="keyword">var</span> fs = require(<span class="string">"fs"</span>),
+path = require(<span class="string">"path"</span>),
+_ = require(<span class="string">"lodash"</span>);
 
-<span class="keyword">var</span> processBlock = require(<span class="string">"./processor"</span>).processBlock,
-		parseString = require(<span class="string">"./parser"</span>).parseString
+<span class="keyword">var</span> processBlocks = require(<span class="string">"./processor"</span>).processBlocks,
+parseString = require(<span class="string">"./parser"</span>).parseString;
 
 
 
@@ -51,76 +50,68 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-2">#</a>
         </div>
-      <pre><code >    <span class="keyword">To</span> know <span class="keyword">with</span> wich language this <span class="keyword">file</span> was written
-</code></pre>
+      <p>To know with wich language this file was written</p>
       </td>
       <td class="code">
-      <pre><code class="javascript">
-	<span class="keyword">var</span> lang = <span class="keyword">function</span>(filename) {
+      <pre><code class="javascript">	<span class="keyword">var</span> lang = <span class="keyword">function</span>(filename) {
 		<span class="keyword">return</span> _(configs).find(<span class="keyword">function</span>(config) {
 			<span class="keyword">return</span> config.files.some(<span class="keyword">function</span>(filenameRegEx) {
-				<span class="keyword">return</span> filenameRegEx.test(filename)
-			})
-		})
-	}
+				<span class="keyword">return</span> filenameRegEx.test(filename);
+			});
+		});
+	};
 
 	<span class="keyword">var</span> defaultOptions = {
 		templatePath: (__dirname + <span class="string">"/templates/single.file.jst"</span>)
-	}
+	};
 
 	<span class="keyword">return</span> {
 		processFile: <span class="keyword">function</span>(filePath, done, options) {
-			<span class="keyword">var</span> filename = path.basename(filePath)
+			<span class="keyword">var</span> filename = path.basename(filePath);
 
-			<span class="keyword">var</span> langConfig = lang(filename)
+			<span class="keyword">var</span> langConfig = lang(filename);
 
 			options = _.extend(defaultOptions, {
 				outputPath: <span class="string">"."</span>
-			}, options)
+			}, options);
 
 			fs.readFile(options.templatePath, <span class="string">'utf8'</span>, <span class="keyword">function</span>(err, tpl) {
 				<span class="keyword">if</span>(err) {
-					console.log(<span class="string">"Could not read template file: "</span> + templatePath)
-					<span class="keyword">throw</span> err
+					console.log(<span class="string">"Could not read template file: "</span> + templatePath);
+					<span class="keyword">throw</span> err;
 				}
 
-				<span class="keyword">var</span> compiledTemplate = _.template(tpl)
+				<span class="keyword">var</span> compiledTemplate = _.template(tpl);
 
 				fs.readFile(filePath, <span class="string">'utf8'</span>, <span class="function"><span class="keyword">function</span> <span class="params">(err, data)</span> {</span>
-				  <span class="keyword">if</span> (err) {
-				  	console.log(<span class="string">"Could not read documented source file: "</span> + filePath)
-				  	<span class="keyword">throw</span> err
-				  }
+					<span class="keyword">if</span> (err) {
+						console.log(<span class="string">"Could not read documented source file: "</span> + filePath);
+						<span class="keyword">throw</span> err;
+					}
 
-				  <span class="keyword">var</span> sections = []
+					<span class="keyword">var</span> sections = processBlocks(parseString(
+						langConfig.comments, 
+						data
+						), langConfig.lang);
 
-				  parseString(
-				  	langConfig.comments, 
-				  	data, 
-				  	<span class="keyword">function</span>(newBlock) {
-				  		sections.push(processBlock(newBlock, langConfig.lang))
-				  	}, 
-				  	<span class="keyword">function</span>() {
-				  		fs.writeFile(path.join(options.outputPath, filename + <span class="string">".html"</span>), 
-				  			compiledTemplate({
-				  				filename: filename,
-				  				sections: sections,
-				  				rootDir: options.rootDir
-				  			}), 
-				  			<span class="keyword">function</span>(err) {
-				  				<span class="keyword">if</span> (err) <span class="keyword">throw</span> err
-				  				done()
-				  			}
-				  		)
-				  	}	
-				  )
-				})
-			})
+					fs.writeFile(path.join(options.outputPath, filename + <span class="string">".html"</span>), 
+						compiledTemplate({
+							filename: filename,
+							sections: sections,
+							rootDir: options.rootDir
+						}), 
+						<span class="keyword">function</span>(err) {
+							<span class="keyword">if</span> (err) <span class="keyword">throw</span> err;
+							done();
+						}
+						);
+				});
+			});
 		}
-	}
-}
+	};
+};
 
-module.exports = docco</code></pre>
+module.exports = docco;</code></pre>
       </td>
     </tr>
     

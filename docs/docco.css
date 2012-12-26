@@ -1,125 +1,89 @@
 /*---------------------- Syntax Highlighting -----------------------------*/
 /*
 
-github.com style (c) Vasily Polovnyov <vast@whiteants.net>
+Orginal Style from ethanschoonover.com/solarized (c) Jeremy Hull <sourdrums@gmail.com>
 
 */
 
 pre .comment,
 pre .template_comment,
 pre .diff .header,
+pre .doctype,
+pre .pi,
+pre .lisp .string,
 pre .javadoc {
-  color: #998;
-  font-style: italic
+  color: #93a1a1;
+  font-style: italic;
 }
 
 pre .keyword,
-pre .css .rule .keyword,
 pre .winutils,
-pre .javascript .title,
-pre .nginx .title,
-pre .subst,
+pre .method,
+pre .addition,
+pre .css .tag,
 pre .request,
-pre .status {
-  color: #333;
-  font-weight: bold
+pre .status,
+pre .nginx .title {
+  color: #859900;
 }
 
 pre .number,
-pre .hexcolor,
-pre .ruby .constant {
-  color: #099;
-}
-
+pre .command,
 pre .string,
 pre .tag .value,
 pre .phpdoc,
-pre .tex .formula {
-  color: #d14
+pre .tex .formula,
+pre .regexp,
+pre .hexcolor {
+  color: #2aa198;
 }
 
 pre .title,
-pre .id {
-  color: #900;
-  font-weight: bold
-}
-
-pre .javascript .title,
-pre .lisp .title,
-pre .clojure .title,
-pre .subst {
-  font-weight: normal
-}
-
-pre .class .title,
-pre .haskell .type,
+pre .localvars,
+pre .chunk,
+pre .decorator,
+pre .built_in,
+pre .identifier,
 pre .vhdl .literal,
-pre .tex .command {
-  color: #458;
-  font-weight: bold
-}
-
-pre .tag,
-pre .tag .title,
-pre .rules .property,
-pre .django .tag .keyword {
-  color: #000080;
-  font-weight: normal
+pre .id {
+  color: #268bd2;
 }
 
 pre .attribute,
 pre .variable,
-pre .lisp .body {
-  color: #008080
-}
-
-pre .regexp {
-  color: #009926
-}
-
-pre .class {
-  color: #458;
-  font-weight: bold
-}
-
-pre .symbol,
-pre .ruby .symbol .string,
-pre .lisp .keyword,
-pre .tex .special,
-pre .prompt {
-  color: #990073
-}
-
-pre .built_in,
-pre .lisp .title,
-pre .clojure .built_in {
-  color: #0086b3
+pre .lisp .body,
+pre .smalltalk .number,
+pre .constant,
+pre .class .title,
+pre .parent,
+pre .haskell .type {
+  color: #b58900;
 }
 
 pre .preprocessor,
-pre .pi,
-pre .doctype,
+pre .preprocessor .keyword,
 pre .shebang,
-pre .cdata {
-  color: #999;
-  font-weight: bold
+pre .symbol,
+pre .symbol .string,
+pre .diff .change,
+pre .special,
+pre .attr_selector,
+pre .important,
+pre .subst,
+pre .cdata,
+pre .clojure .title {
+  color: #cb4b16;
 }
 
 pre .deletion {
-  background: #fdd
+  color: #dc322f;
 }
 
-pre .addition {
-  background: #dfd
+pre .tex .formula {
+  background: #eee8d5;
 }
 
-pre .diff .change {
-  background: #0086b3
-}
 
-pre .chunk {
-  color: #aaa
-}
 
 /* Typographics and layouts */
 
@@ -158,7 +122,12 @@ table td {border: 0; outline: 0}
   overflow-x:auto;
 }
 
-.docs code {background:#f7fff7}
+.docs p code {
+  background: #f7fff7;
+  border: 1px solid #dedede;
+  font-size: 12px;
+  padding: 0 0.2em;
+}
 
 .octowrap {position: relative}
 
@@ -182,6 +151,10 @@ table td {border: 0; outline: 0}
   vertical-align: top;
   background: #f5f5ff;
   border-left: 1px solid #e5e5ee;
+}
+.code pre {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .code pre code, .docs pre code {
