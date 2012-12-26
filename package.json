@@ -1,5 +1,7 @@
 {
-  "bin": { "docco": "./bin/docco"},
+  "bin": {
+    "docco": "./bin/docco"
+  },
   "name": "docco-next",
   "version": "0.0.5",
   "description": "Fork of docco with a lot of advanced features",
@@ -9,13 +11,14 @@
     "docs"
   ],
   "author": {
-    "name" : "Denis Bardadym",
-    "email" : "bardadymchik@gmail.com"
+    "name": "Denis Bardadym",
+    "email": "bardadymchik@gmail.com"
   },
   "license": "MIT",
   "devDependencies": {
     "mocha": "~1.7.4",
-    "should": "~1.2.1"
+    "should": "~1.2.1",
+    "jshint": "~0.9.1"
   },
   "dependencies": {
     "showdown": "~0.3.1",

@@ -2,8 +2,11 @@
 MOCHA_OPTS=
 REPORTER = spec
 
-start:
-	@NODE_ENV=development ./node_modules/.bin/nodemon ./server.js
+doc:
+	./bin/docco -l resources/languages.example.json --title 'New docco' -o ./docs lib
+
+jshint:
+	./node_modules/.bin/jshint lib
 
 test: test-unit
 
