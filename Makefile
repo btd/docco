@@ -7,6 +7,7 @@ doc:
 
 jshint:
 	./node_modules/.bin/jshint lib
+	./node_modules/.bin/jshint bin/docco
 
 test: test-unit
 
@@ -31,4 +32,15 @@ test-cov:
 
 	@rm -rf _src-with-coverage && rm -rf _test-with-coverage
 
-.PHONY: test test-unit test-cov
+examples:
+	@wget https://raw.github.com/documentcloud/underscore/master/underscore.js
+
+	@wget https://raw.github.com/documentcloud/backbone/master/backbone.js
+
+	./bin/docco -l resources/languages.example.json --title 'Example' -o ./examples lib underscore.js backbone.js
+
+	@rm underscore.js
+	
+	@rm backbone.js
+
+.PHONY: test test-unit test-cov jshint doc examples
