@@ -122,7 +122,12 @@ table td {border: 0; outline: 0}
   overflow-x:auto;
 }
 
-.docs code {background:#f7fff7}
+.docs p code {
+  background: #f7fff7;
+  border: 1px solid #dedede;
+  font-size: 12px;
+  padding: 0 0.2em;
+}
 
 .octowrap {position: relative}
 

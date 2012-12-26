@@ -27,16 +27,10 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-1">#</a>
         </div>
-      <h2 id="parsing">Parsing</h2>
-
-<p>This will find nearest comment begining</p>
+      
       </td>
       <td class="code">
       <pre><code class="javascript">
-<span class="keyword">var</span> nextCommentBegin = <span class="keyword">function</span>(comments, data, fromPos) {
-	<span class="keyword">return</span> nextCommentPart(comments, data, <span class="number">0</span>, fromPos)
-}
-
 </code></pre>
       </td>
     </tr>
@@ -47,97 +41,192 @@
         <div class="octowrap">
           <a class="octothorpe" href="#section-2">#</a>
         </div>
-      <pre><code class="javascript"><span class="keyword">var</span> a = <span class="string">'test'</span>;
-<span class="comment">//comments in text</span>
-<span class="comment">//but it is valid code</span>
-<span class="comment">//&lt;pre&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;</span>
-</code></pre>
+      <h2 id="parsing">Parsing</h2>
+
+<p>This will find nearest comment begining</p>
       </td>
       <td class="code">
       <pre><code class="javascript">
-<span class="keyword">var</span> nextCommentEnd = <span class="keyword">function</span>(comments, data, fromPos) {
-	<span class="keyword">return</span> nextCommentPart(comments, data, <span class="number">1</span>, fromPos)
-}
+<span class="keyword">var</span> nextCommentBegin = <span class="keyword">function</span>(comments, data, fromPos) {
+	<span class="keyword">return</span> nextCommentPart(comments, data, <span class="number">0</span>, fromPos);
+};
 
-<span class="keyword">var</span> nextCommentPart = <span class="keyword">function</span>(comments, data, part, fromPos) {
-	fromPos = fromPos || <span class="number">0</span>
+<span class="keyword">var</span> nextCommentEnd = <span class="keyword">function</span>(comments, data, fromPos) {
+	<span class="keyword">return</span> nextCommentPart(comments, data, <span class="number">1</span>, fromPos);
+};
+
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-3">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-3">#</a>
+        </div>
+      <p>Lined endings and indentation in code tabs and/or spaces.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript"><span class="keyword">var</span> lineEnd = <span class="string">'\n'</span>,
+		ident = <span class="regexp">/[\t ]*/</span>;
+
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-4">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-4">#</a>
+        </div>
+      <p>I hope programmer will be enough accurate to do not mess spaces and tabs.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript"><span class="keyword">var</span> foundIdent = <span class="keyword">function</span>(data, pos) {
+	<span class="keyword">var</span> lastLinePos = data.lastIndexOf(lineEnd, pos);
+
+	<span class="keyword">var</span> lineBeforeCommentBegin = data.substring(lastLinePos, pos - lastLinePos);
+
+	<span class="keyword">return</span> ident.test(lineBeforeCommentBegin) ? lineBeforeCommentBegin : <span class="string">""</span>;
+};
+
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-5">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-5">#</a>
+        </div>
+      <p>If result.commect === -1 then no comments was found</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript"><span class="keyword">var</span> nextCommentPart = <span class="keyword">function</span>(comments, data, part, fromPos) {
+	fromPos = fromPos || <span class="number">0</span>;
+
+	<span class="keyword">var</span> defaultBlock = { 
+		comment: -<span class="number">1</span>, 
+		textPos: data.length,
+		ident: <span class="string">''</span>
+	};
 
 	<span class="keyword">return</span> comments.map(<span class="keyword">function</span>(comment, index) {
-			<span class="keyword">return</span> { 
-				comment: index, 
-				textPos: data.indexOf(comment[part], fromPos) 
-			}
-		}).reduce(<span class="keyword">function</span>(prevComment, currentComment) {
-			<span class="keyword">return</span> prevComment.textPos &gt; currentComment.textPos &amp;&amp; currentComment.textPos != -<span class="number">1</span> ? currentComment : prevComment
-		}, { 
-			comment: -<span class="number">1</span>, 
-			textPos: data.length
-		})
-}
+		<span class="keyword">var</span> textPos = data.indexOf(comment[part], fromPos);
+
+		<span class="keyword">return</span> { 
+			comment: index, 
+			textPos: textPos,
+			ident: foundIdent(data, textPos)
+		};
+	}).reduce(<span class="keyword">function</span>(prevComment, currentComment) {
+		<span class="keyword">return</span> prevComment.textPos &gt; currentComment.textPos &amp;&amp; 
+			currentComment.textPos != -<span class="number">1</span> ? currentComment : prevComment;
+	}, defaultBlock);
+};
+
+</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-6">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-6">#</a>
+        </div>
+      <p>I decide that block can be combined with previous block if text is empty or contains only spaces/tabs</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript"><span class="keyword">var</span> suitableForCombine = <span class="keyword">function</span>(text) {
+	<span class="keyword">return</span> text === <span class="string">''</span> || <span class="regexp">/^[\t ]+$/</span>.test(text);
+};
 
 <span class="keyword">var</span> parseString = <span class="keyword">function</span>(comments, data) {
-	<span class="keyword">var</span> result = []
-
-	<span class="keyword">var</span> commentBeginFrom = <span class="number">0</span>
-
-	<span class="keyword">var</span> nextBegin = nextCommentBegin(comments, data, commentBeginFrom)
-
-	<span class="keyword">var</span> prevComment = <span class="string">""</span>
+	<span class="keyword">var</span> result = [],
+			commentBeginFrom = <span class="number">0</span>,
+			nextBegin = nextCommentBegin(comments, data, commentBeginFrom),
+				prevComment = <span class="string">''</span>;
 
 	<span class="keyword">var</span> tryCombineLastBlocks = <span class="keyword">function</span>(block) {
-		<span class="keyword">if</span>(result.length &gt;<span class="number">0</span> ) {
-			<span class="keyword">var</span> lastAddedBlock = result[result.length - <span class="number">1</span>]
-			<span class="keyword">if</span>(lastAddedBlock.code.trim() === <span class="string">""</span>) {
-				<span class="comment">//seems we can combine blocks</span>
-				lastAddedBlock.comment += <span class="string">"\n"</span> + block.comment
-				lastAddedBlock.code = block.code
-				<span class="keyword">return</span> <span class="literal">true</span>
-			} <span class="keyword">else</span> <span class="keyword">if</span>(lastAddedBlock.comment.trim() === <span class="string">""</span>){
-				lastAddedBlock.code += <span class="string">"\n"</span> + block.code
-				lastAddedBlock.comment = block.comment
-				<span class="keyword">return</span> <span class="literal">true</span>
+		<span class="keyword">if</span>(result.length &gt; <span class="number">0</span>) {
+			<span class="keyword">var</span> lastAddedBlock = result[result.length - <span class="number">1</span>];
+
+			<span class="keyword">if</span>(suitableForCombine(lastAddedBlock.code)) {
+				</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-7">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-7">#</a>
+        </div>
+      <p>seems we can combine blocks</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">				lastAddedBlock.comment += lineEnd + block.comment;
+				</code></pre>
+      </td>
+    </tr>
+    
+    
+    <tr id="section-8">
+      <td class="docs">
+        <div class="octowrap">
+          <a class="octothorpe" href="#section-8">#</a>
+        </div>
+      <p>We will trimg spaces at the end to last code.</p>
+      </td>
+      <td class="code">
+      <pre><code class="javascript">				lastAddedBlock.code = lastAddedBlock.code.replace(<span class="regexp">/\s+$/</span>, <span class="string">''</span>) + block.code;
+				<span class="keyword">return</span> <span class="literal">true</span>;
 			}
 		}
-		<span class="keyword">return</span> <span class="literal">false</span>
-	}
+		<span class="keyword">return</span> <span class="literal">false</span>;
+	};
 
 	<span class="keyword">var</span> tryAddBlock = <span class="keyword">function</span>() {
-		<span class="keyword">var</span> code = data.substring(commentBeginFrom, nextBegin.textPos)
+		<span class="keyword">var</span> code = data.substring(commentBeginFrom, nextBegin.textPos);
 
-		<span class="keyword">if</span>(code.trim() !== <span class="string">""</span> || prevComment.trim() !== <span class="string">""</span>) {
+		<span class="keyword">if</span>(code !== <span class="string">""</span> || prevComment !== <span class="string">""</span>) {
 			<span class="keyword">var</span> block = { 
 				code: code, 
 				comment: prevComment
-			}
+			};
 
 			<span class="keyword">if</span>(!tryCombineLastBlocks(block)) {
-				result.push(block)
+				result.push(block);
 			}
 		}
-	}
+	};
 
 	<span class="keyword">while</span>(nextBegin.comment !== -<span class="number">1</span>) {
-		<span class="keyword">var</span> comment = comments[nextBegin.comment]
+		<span class="keyword">var</span> comment = comments[nextBegin.comment];
 
-		tryAddBlock()
+		tryAddBlock();
 
-		<span class="keyword">var</span> nextEnd = nextCommentEnd([comment], data, nextBegin.textPos + comment[<span class="number">0</span>].length)
+		<span class="keyword">var</span> nextEnd = nextCommentEnd([comment], data, nextBegin.textPos + comment[<span class="number">0</span>].length);
 
-		prevComment = data.substring(nextBegin.textPos + comment[<span class="number">0</span>].length, nextEnd.textPos)
+		prevComment = data.substring(nextBegin.textPos + comment[<span class="number">0</span>].length, nextEnd.textPos);
 
-		commentBeginFrom = nextEnd.textPos + comment[<span class="number">1</span>].length
+		commentBeginFrom = nextEnd.textPos + comment[<span class="number">1</span>].length;
 
-		nextBegin = nextCommentBegin(comments, data, commentBeginFrom)
+		nextBegin = nextCommentBegin(comments, data, commentBeginFrom);
 	}
 
-	tryAddBlock()
+	tryAddBlock();
 
-	<span class="keyword">return</span> result
-}
+	<span class="keyword">return</span> result;
+};
 
-module.exports.parseString = parseString 
+module.exports.parseString = parseString;
 
-module.exports.nextCommentPart = nextCommentPart 
+module.exports.nextCommentPart = nextCommentPart;
 </code></pre>
       </td>
     </tr>
