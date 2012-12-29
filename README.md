@@ -1,14 +1,14 @@
 # Docco - docco documentation generator
 
-It is a rewriten from scratch original docco generator, why i decide to rewrite it:
+It is a rewritten from scratch original docco generator, why I decided to rewrite it:
 
 * Support of directories
 * Depends only from node and strong libraries, no process.exec
-* Support any language and any comments styles - multilines, onelines - just fill config file and point generator on it
+* Support any language and any comments styles - multilines, onelines - just fill a config file and point the generator to it
 
-You can see [examples](http://btd.github.com/docco/examples/index.html) of project that already used docco.
+You can see [examples](http://btd.github.com/docco/examples/index.html) of projects that already use docco.
 
-## Examle usage
+## Example usage
 
 Show help:
 
@@ -21,11 +21,12 @@ Process one single file:
 ```
 docco file.js
 ```
-Will be created file in current directory with name file.js.html and docco.css. It is all. To specify output directory use `-o` option (strongly recommended for batch processing).
+Will become a newly created file in current directory with name file.js.html and docco.css for its style.
+That is all. To specify output directory use `-o` option (strongly recommended for batch processing).
 
-By default it uses C-style comments `/*! comment */` and `// ... \n`. So i am sure you want to use another type of comments - fill language configuration file and specify it with `-l` option.
+By default it uses C-style comments `/*! comment */` and `// ... \n`. So I am sure you want to use another type of comments - fill language configuration file and specify it with `-l` option.
 
-For example i have such configuration file: 
+For example I have this configuration file: 
 
 ```json
 [
@@ -46,7 +47,7 @@ For example i have such configuration file:
 ]
 ```
 
-It is array of objects. Each object should has 3 property: `lang` - it is `highlight.js` language for highlight, you can skip this argument and in this case will be used best matched, `comments` - it is obviously array or comments, each it is array with start and end, `files` - array of file patterns for this object configuration.
+It is an array of objects. Each object has 3 properties: `lang` - it is `highlight.js` language for highlight, you can skip this argument and in this case will be used best matched, `comments` - it is obviously array or comments, each it is array with start and end, `files` - array of file patterns for this object configuration.
 
 Example usage:
 
@@ -56,7 +57,7 @@ docco -l ./resources/languages.example.json ./lib/batch.js
 
 ## Batch processing
 
-I strongly recommend add `-o` option for batch processing!!!
+I strongly recommend adding `-o` option for batch processing!!!
 
 To unable batch processing you can do one of the following things:
 
@@ -74,7 +75,7 @@ docco -l ./resources/languages.example.json -o ./docs ./lib/batch.js ./lib/singl
 
 First 3 cases uses default filters for directories - skip files which starts from `.`. Last case used when you want to specify your own filters.
 
-Example of batch config:
+Example of a batch config:
 
 ```json
 [
@@ -86,15 +87,18 @@ Example of batch config:
 ]
 ```
 
-So it is also array (you can add any numbers of entryes) with objects: `path` path to entry (usually directory), `config` - it is a language configuration for this entry (see example above), `filters` - it is array of strings, which will be excluded while traversing `path` location recusivly.
+So it is also array (you can add any numbers of entries) with objects: `path`
+path to entry (usually directory), `config` - it is a language configuration
+for this entry (see example above), `filters` - it is array of strings, which
+will be excluded while traversing `path` location recusivly.
 
-For this package i am generating docs with this command:
+For this package I generated the documantation with this command:
 
 ```
 docco -o docs -l ./resources/languages.example.json --title "Docco - documentaion generator" ./lib
 ```
 
-## License 
+## License
 
 (The MIT License)
 
